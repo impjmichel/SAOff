@@ -2,6 +2,8 @@
 #pragma comment(lib, "glu32.lib") 
 #include <GL/glew.h>
 #include "stb_image.h"
+#include <windows.h>
+#include <iostream>
 
 void Floor::draw()
 {
@@ -41,7 +43,7 @@ void Floor::initTexture()
 		glBindTexture(GL_TEXTURE_2D, textureID);
 
 		int width = 1024, height = 1024, bpp = 32;
-		unsigned char* imgData = stbi_load("C:/grass4.png", &width, &height, &bpp, 4);
+		unsigned char* imgData = stbi_load("c:/VrCave/Development/SwordArtOffline/Data/grass4.png", &width, &height, &bpp, 4);
 
 		gluBuild2DMipmaps(GL_TEXTURE_2D, 
 			4, 
