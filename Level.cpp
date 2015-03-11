@@ -3,6 +3,7 @@
 #include "Floor.h"
 #include "Cube.h"
 #include "Camera.h"
+#include "Skybox.h"
 #include <VrLib\Application.h>
 #include <ctime>
 #include <btBulletDynamicsCommon.h>
@@ -49,6 +50,8 @@ Level::Level()
 	DownKey->init("DownKey");
 	LeftKey->init("LeftKey");
 	RightKey->init("RightKey");
+
+	skybox = new Skybox();
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -238,6 +241,7 @@ void Level::draw()
 	glEnable(GL_MULTISAMPLE_ARB);
 	glPushMatrix();
 	InitCameraRotation();
+	skybox->draw();
 	InitCameraTranslation();
 
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);

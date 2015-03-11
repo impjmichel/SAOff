@@ -13,6 +13,7 @@ class btSequentialImpulseConstraintSolver;
 class btDiscreteDynamicsWorld;
 class PositionalDevice;
 class DigitalDevice;
+class Skybox;
 
 class Level{
 private:
@@ -42,7 +43,8 @@ private:
 public:
 	std::vector<Cube *> cubeList;
 	Floor *f;
-	
+	Skybox *skybox;
+
 	Level();
 	~Level();
 	void initLighting();
