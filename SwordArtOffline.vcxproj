@@ -10,6 +10,41 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cube.h" />
+    <ClInclude Include="Floor.h" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GaussianBlur.h" />
+    <ClInclude Include="Level.h" />
+    <ClInclude Include="Main.h" />
+    <ClInclude Include="PostProcessing.h" />
+    <ClInclude Include="RenderManager.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="Floor.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GaussianBlur.cpp" />
+    <ClCompile Include="Level.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PostProcessing.cpp" />
+    <ClCompile Include="RenderManager.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="stb_image.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\gaussianblur.fp" />
+    <None Include="Data\gaussianblur.vp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\grass4.png" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7F2AEA0A-FAAA-400B-856F-FDC01A94F3B3}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -91,24 +126,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Cube.cpp" />
-    <ClCompile Include="Floor.cpp" />
-    <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MyApplication.cpp" />
-    <ClCompile Include="stb_image.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Cube.h" />
-    <ClInclude Include="Floor.h" />
-    <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Main.h" />
-    <ClInclude Include="MyApplication.h" />
-    <ClInclude Include="stb_image.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

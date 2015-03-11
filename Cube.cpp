@@ -10,6 +10,11 @@ xVelocity(xVelocity), yVelocity(yVelocity), zVelocity(zVelocity),
 xScale(xScale), yScale(yScale), zScale(zScale),
 isMoving(isMoving), isAlive(isAlive) {}
 
+Cube::~Cube()
+{
+	delete body;
+}
+
 void Cube::draw()
 {
 	if (!isAlive)

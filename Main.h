@@ -19,6 +19,8 @@
 #pragma comment(lib, "Libs/LinearMath_vs2010.lib")
 #endif
 
+#include <Windows.h>
+#include <GL\glew.h>
 #include <btBulletDynamicsCommon.h>
 
 extern btBroadphaseInterface* broadphase;
