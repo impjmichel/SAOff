@@ -26,6 +26,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="TerrainManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -35,6 +36,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GaussianBlur.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="Libs\noiseutils\noiseutils.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mob.cpp" />
     <ClCompile Include="ObjModel.cpp" />
@@ -43,6 +45,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.c" />
+    <ClCompile Include="TerrainManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\gaussianblur.fp" />
@@ -106,11 +109,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\VrCave\Development\SwordArtOffline\Libs;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\VrCave\Development\SwordArtOffline\Libs;C:\VrCave\Development\SwordArtOffline\Libs\noiseutils;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\VrCave\Development\SwordArtOffline\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,6 +134,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

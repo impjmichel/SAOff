@@ -47,7 +47,6 @@ public:
 
 	Level();
 	~Level();
-	void initLighting();
 	void draw();
 	void update();
 	void update(double frameTime, double totalTime);

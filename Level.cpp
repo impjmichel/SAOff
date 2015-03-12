@@ -209,35 +209,13 @@ void Level::update(double frameTime, double totalTime)
 	update();
 }
 
-void Level::initLighting()
-{
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_NORMALIZE);
-	const float amb = 0.5;
-	const float LightAmbient[4] = { amb, amb, amb, 1.0f };
-	const float LightDiffuse[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
-	const float whiteSpecularLight[] = { 1.0, 1.0, 1.0 };
-	const GLfloat shiny = 60.0;
-	glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, whiteSpecularLight);
-	glLightfv(GL_LIGHT0, GL_SHININESS, &shiny);
-	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	glHint(GL_TEXTURE_COMPRESSION_HINT, GL_NICEST);
-	glEnable(GL_TEXTURE_2D);
-}
+
 
 
 void Level::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	initLighting();
 	const float LightPosition[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
 	glEnable(GL_MULTISAMPLE_ARB);
 	glPushMatrix();

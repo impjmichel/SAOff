@@ -139,10 +139,10 @@ GLuint initShader(char *fileName)
 	GLuint uiShaderID = glCreateProgram();
 
 	char filePath[MAX_PATH];
-	sprintf_s(filePath, "%s%s%s", "C:/VrCave/Development/SecondProject/Data/", fileName, ".vp");
+	sprintf_s(filePath, "%s%s%s", "C:/VrCave/Development/SwordArtOffline/Data/", fileName, ".vp");
 	shaderAttachFromFile(uiShaderID, GL_VERTEX_SHADER, filePath);
 
-	sprintf_s(filePath, "%s%s%s", "C:/VrCave/Development/SecondProject/Data/", fileName, ".fp");
+	sprintf_s(filePath, "%s%s%s", "C:/VrCave/Development/SwordArtOffline/Data/", fileName, ".fp");
 	shaderAttachFromFile(uiShaderID, GL_FRAGMENT_SHADER, filePath);
 
 	/* link the program and make sure that there were no errors */

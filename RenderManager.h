@@ -13,6 +13,7 @@ public:
 	RenderManager();
 	~RenderManager();
 	void draw();
+	void initLighting();
 };
 
 #endif
