@@ -8,10 +8,12 @@
 #include <VrLib\Application.h>
 #include <ctime>
 #include <btBulletDynamicsCommon.h>
+#include <btBulletCollisionCommon.h>
 #include <GL/glew.h>
 #include <iostream>
 #include "Shader.h"
 #include "Mob.h"
+#include <glm/gtc/type_ptr.hpp>
 
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
@@ -90,12 +92,30 @@ Level::Level()
 	//Creating a static shape which will act as ground	
 	{
 		f = new Floor();
-		btCollisionShape* groundShape = new btBoxShape(btVector3(FLOOR_WIDTH / 2., 0, FLOOR_HEIGHT / 2.));
+		btTriangleMesh *tMesh = new btTriangleMesh();
+
+		Terrain::IndexBuffer m_IndexBuffer = g_Terrain->m_IndexBuffer;
+		Terrain::PositionBuffer m_PositionBuffer = g_Terrain->m_PositionBuffer;
+		for (unsigned long int i = 0; i < m_IndexBuffer.size(); i += 3)
+		{
+			glm::vec3 t01 = ((glm::vec3)m_PositionBuffer[m_IndexBuffer[i + 0]]);
+			btVector3 t1 = btVector3(t01.x, t01.y, t01.z);
+
+			glm::vec3 t02 = ((glm::vec3)m_PositionBuffer[m_IndexBuffer[i + 1]]);
+			btVector3 t2 = btVector3(t02.x, t02.y, t02.z);
+
+			glm::vec3 t03 = ((glm::vec3)m_PositionBuffer[m_IndexBuffer[i + 2]]);
+			btVector3 t3 = btVector3(t03.x, t03.y, t03.z);
+			
+			tMesh->addTriangle(t1, t2, t3);
+		}
+		btCollisionShape *groundShape = new btBvhTriangleMeshShape(tMesh, true);
+		//btCollisionShape* groundShape = new btBoxShape(btVector3(FLOOR_WIDTH / 2., 0, FLOOR_HEIGHT / 2.));
 
 		btScalar mass = 0; //rigidbody is static if mass is zero, otherwise dynamic
 		btVector3 localInertia(0, 0, 0);
 
-		groundShape->calculateLocalInertia(mass, localInertia);
+		//groundShape->calculateLocalInertia(mass, localInertia);
 
 		btTransform groundTransform;
 		groundTransform.setIdentity();
@@ -107,7 +127,7 @@ Level::Level()
 		body->setUserPointer(&f);
 		//	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		world->addRigidBody(body); //add the body to the dynamics world
-		gContactProcessedCallback = &contactProcessedCallback;
+		//gContactProcessedCallback = &contactProcessedCallback;
 	}
 }
 
@@ -257,7 +277,7 @@ void Level::draw()
 	}
 
 	g_Terrain->Render();
-	mob->draw();
+	//mob->draw();
 	//f->draw();
 	glPopMatrix();
 	glDisable(GL_MULTISAMPLE_ARB);

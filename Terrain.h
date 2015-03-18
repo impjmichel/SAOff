@@ -3,6 +3,10 @@
 class Terrain
 {
 public:
+	typedef std::vector<glm::vec3>  PositionBuffer;
+	typedef std::vector<unsigned int>     IndexBuffer;
+	PositionBuffer  m_PositionBuffer;
+	IndexBuffer     m_IndexBuffer;
 
 	Terrain( float heightScale = 500.0f, float blockScale = 2.0f );
 	virtual ~Terrain();
@@ -28,26 +32,23 @@ protected:
 	void RenderNormals();
 
 private:
-	typedef std::vector<glm::vec3>  PositionBuffer;
 	typedef std::vector<glm::vec4>  ColorBuffer;
 	typedef std::vector<glm::vec3>  NormalBuffer;
 	typedef std::vector<glm::vec2>  TexCoordBuffer;
-	typedef std::vector<unsigned int>     IndexBuffer;
 
-	PositionBuffer  m_PositionBuffer;
 	ColorBuffer     m_ColorBuffer;
 	NormalBuffer    m_NormalBuffer;
 	TexCoordBuffer  m_Tex0Buffer;
-	IndexBuffer     m_IndexBuffer;
 
 	// ID's for the VBO's
-	unsigned int m_GLVertexBuffer;
 	unsigned int m_GLNormalBuffer;
 	unsigned int m_GLColorBuffer;
 	unsigned int m_GLTex0Buffer;
 	unsigned int m_GLTex1Buffer;
 	unsigned int m_GLTex2Buffer;
 	unsigned int m_GLIndexBuffer;
+	unsigned int m_GLVertexBuffer;
+	
 
 	static const unsigned int m_uiNumTextures = 3;
 	unsigned int m_GLTextures[m_uiNumTextures];
