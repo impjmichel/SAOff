@@ -19,6 +19,8 @@
     <ClInclude Include="GaussianBlur.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Main.h" />
+    <ClInclude Include="Mob.h" />
+    <ClInclude Include="ObjModel.h" />
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Shader.h" />
@@ -38,6 +40,8 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Libs\noiseutils\noiseutils.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Mob.cpp" />
+    <ClCompile Include="ObjModel.cpp" />
     <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="RenderManager.cpp" />
     <ClCompile Include="Shader.cpp" />

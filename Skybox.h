@@ -7,10 +7,12 @@ class Skybox
 {
 public:
 	void draw();
+	void update(double frameTime, double totalTime);
 
 private:
+	float rotationFactor = 0.;
 	void initTexturePart(char *partName, int partNumber);
-	void initTexturing();
+	void initTexturing(); 
 	unsigned int textureIDs[6];
 	bool isInitialized = false;
 };

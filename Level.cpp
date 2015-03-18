@@ -227,6 +227,7 @@ void Level::update()
 void Level::update(double frameTime, double totalTime)
 {
 	world->stepSimulation(frameTime / 1000.);
+	skybox->update(frameTime, totalTime);
 	update();
 }
 

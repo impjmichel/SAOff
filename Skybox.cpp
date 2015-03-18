@@ -8,6 +8,13 @@
 
 #include <Windows.h>
 
+void Skybox::update(double frameTime, double totalTime)
+{
+	double newRotationFactor = rotationFactor + frameTime;
+	//float-modulo
+	rotationFactor = newRotationFactor > 360. ? (newRotationFactor - 360.) : newRotationFactor;
+}
+
 void Skybox::initTexturing()
 {
 	if (!isInitialized)
@@ -29,7 +36,7 @@ void Skybox::initTexturePart(char *partName, int partNumber)
 
 	int width = 1024, height = 1024, bpp = 32;
 	char finalTexturePath[MAX_PATH];
-	sprintf_s(finalTexturePath, "C:/VrCave/Development/SwordArtOffline/Data/Skybox2%s%s", partName, ".png");
+	sprintf_s(finalTexturePath, "C:/VrCave/Development/SwordArtOffline/Data/night%s%s", partName, ".png");
 	unsigned char* imgData = stbi_load(finalTexturePath, &width, &height, &bpp, 4);
 	glTexImage2D(GL_TEXTURE_2D,
 		0,					//level
@@ -63,6 +70,7 @@ void Skybox::draw()
 	glPushMatrix();
 	glScalef(SKYBOX_SCALE, SKYBOX_SCALE, SKYBOX_SCALE);
 	glTranslatef(0, 0, 0);
+	glRotatef(rotationFactor, 0., 1., 0.);
 
 	// Render the front quad
 	glBindTexture(GL_TEXTURE_2D, textureIDs[0]);
