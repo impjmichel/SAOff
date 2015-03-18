@@ -15,6 +15,7 @@ class PositionalDevice;
 class DigitalDevice;
 class Skybox;
 class Terrain;
+class Mob;
 
 class Level{
 private:
@@ -46,6 +47,8 @@ public:
 	std::vector<Cube *> cubeList;
 	Floor *f;
 	Skybox *skybox;
+	Mob *mob;
+	
 
 	Level();
 	~Level();

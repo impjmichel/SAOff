@@ -7,8 +7,8 @@ void Mob::init()
 {
 	shaderID = initShader("simple");
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf\\Wolf.obj");
-	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf2\\Wolf.obj");
-	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\boss\\Mon.obj");
+	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf2\\Wolf.obj");
+	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\boss\\Mon.obj");
 }
 
 void Mob::draw()

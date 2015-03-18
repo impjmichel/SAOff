@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #include "Shader.h"
+#include "Mob.h"
 
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
@@ -75,6 +76,8 @@ Level::Level()
 	RightKey->init("RightKey");
 
 	skybox = new Skybox();
+	mob = new Mob();
+	mob->init();
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -254,6 +257,7 @@ void Level::draw()
 	}
 
 	g_Terrain->Render();
+	mob->draw();
 	//f->draw();
 	glPopMatrix();
 	glDisable(GL_MULTISAMPLE_ARB);
