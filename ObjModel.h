@@ -10,14 +10,16 @@ class Texture;
 
 class ObjModel
 {
-private:
+public: //private:
 	class MaterialInfo
 	{
 	public:
 		MaterialInfo();
 		std::string name;
-		Texture* texture;
-		Texture* bumpMap;
+		unsigned int texture;
+		std::string textureStr;
+		unsigned int bumpMap;
+		std::string bumpMapStr;
 
 		bool hasTexture;
 	};
@@ -36,10 +38,10 @@ private:
 	GLuint _vertexArray;
 
 	void loadMaterialFile(std::string fileName, std::string dirName);
-public:
+//public:
 	ObjModel(std::string filename);
 	~ObjModel(void);
 
-	void draw();
+	void draw(unsigned int shaderID);
 };
 

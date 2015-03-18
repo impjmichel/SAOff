@@ -3,6 +3,7 @@
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
 #include "Cube.h"
+#include <glm/gtc/type_ptr.hpp>
 
 Cube::Cube(float xPosition, float yPosition, float zPosition, float xVelocity, float yVelocity, float zVelocity, float xScale, float yScale, float zScale, bool isMoving, bool isAlive) :
 xPosition(xPosition), yPosition(yPosition), zPosition(zPosition),
@@ -92,10 +93,22 @@ void Cube::update()
 
 	//body->setLinearVelocity(btVector3(xVelocity, velocity.getY(), zVelocity));
 
-	btQuaternion location = body->getOrientation();
-	xPosition = location.x();
-	yPosition = location.y();
-	zPosition = location.z();
+	//btQuaternion location = body->getOrientation();
+	//xPosition = location.x();
+	//yPosition = location.y();
+	//zPosition = location.z();
+
+	btTransform trans;
+	btScalar m[16];
+
+	body->getMotionState()->getWorldTransform(trans);
+	trans.getOpenGLMatrix(m);
+	glm::mat4 mat = glm::make_mat4(m);
+	glm::vec3 location = glm::vec3(mat[3]);
+
+	xPosition = location[0];
+	yPosition = location[1];
+	zPosition = -1. * location[2];
 }
 
 bool Cube::isOutOfBounds(float xMin, float xMax, float yMin, float yMax, float zMin, float zMax)

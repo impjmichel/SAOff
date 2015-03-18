@@ -35,7 +35,7 @@ void RenderManager::initLighting()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_NORMALIZE);
-	const float amb = 0.8;
+	const float amb = 0.5;
 	const float LightAmbient[4] = { amb, amb, amb, 1.0f };
 	const float LightDiffuse[4] = { 0.5f, 0.5f, 0.5f, 0.5f };
 	const float whiteSpecularLight[] = { 1.0, 1.0, 1.0 };

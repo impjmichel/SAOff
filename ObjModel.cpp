@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-//#include "Texture.h"
+#include "stb_image.h"
 #include <algorithm>
 #include <glm/glm.hpp>
 
@@ -349,17 +349,17 @@ ObjModel::ObjModel(std::string fileName)
 
 }
 
-
 ObjModel::~ObjModel(void)
 {
 }
 
-
-
-
-void ObjModel::draw()
+void ObjModel::draw(unsigned int shaderID)
 {
-    glBindVertexArray(_vertexArray);
+	glBindVertexArray(_vertexArray);
+	glBindAttribLocation(shaderID, 0, "InVertex");
+	glBindAttribLocation(shaderID, 2, "InTexCoord0");
+	GLint loc = glGetUniformLocation(shaderID, "texture");
+
 	for(size_t i = 0; i < groups.size(); i++)
 	{
 		ObjGroup* group = groups[i];
@@ -367,16 +367,47 @@ void ObjModel::draw()
 		if(material->hasTexture)
 		{
 			glActiveTexture(GL_TEXTURE0);
-			//glBindTexture(GL_TEXTURE_2D, material->texture->textureId);
+			glBindTexture(GL_TEXTURE_2D, material->texture);
+			glUniform1f(loc, materials[group->materialIndex]->texture);
 		}
-		if(material->bumpMap != NULL)
-		{
-			glActiveTexture(GL_TEXTURE1);
-			//glBindTexture(GL_TEXTURE_2D, material->bumpMap->textureId);
-		}
+		//if(material->bumpMap != NULL)
+		//{
+		//	glActiveTexture(GL_TEXTURE1);
+		//	glBindTexture(GL_TEXTURE_2D, material->bumpMap);
+		//}
 		
 		glDrawArrays(GL_TRIANGLES, group->start, group->end - group->start);
 	}
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+unsigned int textureCreate(std::string filename)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	int width = 1024, height = 1024, bpp = 32;
+	unsigned char* imgData = stbi_load(filename.c_str(), &width, &height, &bpp, 4);
+
+	glTexImage2D(GL_TEXTURE_2D,
+		0,					//level
+		GL_RGBA,			//internal format
+		width,				//width
+		height,				//height
+		0,					//border
+		GL_RGBA,			//data format
+		GL_UNSIGNED_BYTE,	//data type
+		imgData);			//data
+
+	stbi_image_free(imgData);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	return textureID;
 }
 
 void ObjModel::loadMaterialFile( std::string fileName, std::string dirName )
@@ -421,11 +452,13 @@ void ObjModel::loadMaterialFile( std::string fileName, std::string dirName )
 		else if(params[0] == "map_kd")
 		{
 			currentMaterial->hasTexture = true;
-			//currentMaterial->texture = new Texture(dirName + "/" + params[1]);
+			currentMaterial->textureStr = dirName + "/" + params[1];
+			currentMaterial->texture = textureCreate(currentMaterial->textureStr);
 		}
 		else if(params[0] == "map_bump")
 		{
-			//currentMaterial->bumpMap = new Texture(dirName + "/" + params[1]);
+			currentMaterial->bumpMapStr = dirName + "/" + params[1];
+			currentMaterial->bumpMap = textureCreate(currentMaterial->bumpMapStr);
 		}
 		else
 			std::cout<<"Didn't parse "<<params[0]<<" in material file"<<std::endl;

@@ -54,6 +54,8 @@
   <ItemGroup>
     <None Include="Data\gaussianblur.fp" />
     <None Include="Data\gaussianblur.vp" />
+    <None Include="Data\simple.fp" />
+    <None Include="Data\simple.vp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\grass4.png" />

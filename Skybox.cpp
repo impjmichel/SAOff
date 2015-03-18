@@ -10,7 +10,7 @@
 
 void Skybox::update(double frameTime, double totalTime)
 {
-	double newRotationFactor = rotationFactor + frameTime;
+	double newRotationFactor = rotationFactor + (frameTime / 2000.);
 	//float-modulo
 	rotationFactor = newRotationFactor > 360. ? (newRotationFactor - 360.) : newRotationFactor;
 }
@@ -36,7 +36,7 @@ void Skybox::initTexturePart(char *partName, int partNumber)
 
 	int width = 1024, height = 1024, bpp = 32;
 	char finalTexturePath[MAX_PATH];
-	sprintf_s(finalTexturePath, "C:/VrCave/Development/SwordArtOffline/Data/night%s%s", partName, ".png");
+	sprintf_s(finalTexturePath, "C:/VrCave/Development/SwordArtOffline/Data/Skybox2%s%s", partName, ".png");
 	unsigned char* imgData = stbi_load(finalTexturePath, &width, &height, &bpp, 4);
 	glTexImage2D(GL_TEXTURE_2D,
 		0,					//level

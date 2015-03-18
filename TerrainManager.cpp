@@ -2,6 +2,7 @@
 #include "noiseutils\noiseutils.h"
 #include "TerrainManager.h"
 #include <iostream>
+#include <ctime>
 
 using namespace noise;
 using namespace std;
@@ -17,17 +18,38 @@ TerrainManager::~TerrainManager()
 
 unsigned char * TerrainManager::CreateRandomTerrain( unsigned int width, unsigned int height)
 {
+	srand(time(NULL));
 	bool success = false;
 	// preparing
-	module::Perlin myModule;
+	module::RidgedMulti mountainTerrain;
+	mountainTerrain.SetLacunarity(0.0);
+	//mountainTerrain.SetSeed(rand());
+
+	module::Billow baseFlatTerrain;
+	baseFlatTerrain.SetFrequency(4.0);
+
+	module::ScaleBias flatTerrain;
+	flatTerrain.SetSourceModule(0, baseFlatTerrain);
+	flatTerrain.SetScale(0.125);
+	flatTerrain.SetBias(-0.75);
+
+	module::Perlin terrainType;
+	terrainType.SetFrequency(0.5);
+	terrainType.SetPersistence(1.0);
+
+	module::Select finalTerrain;
+	finalTerrain.SetSourceModule(0, flatTerrain);
+	finalTerrain.SetSourceModule(1, mountainTerrain);
+	finalTerrain.SetControlModule(terrainType);
+	finalTerrain.SetBounds(0.0, 1000.0);
+	finalTerrain.SetEdgeFalloff(0.1);
+
 	utils::NoiseMap heightMap;
 	utils::NoiseMapBuilderPlane heightMapBuilder;
-	heightMapBuilder.SetSourceModule(myModule);
+	heightMapBuilder.SetSourceModule(finalTerrain);
 	heightMapBuilder.SetDestNoiseMap(heightMap);
-	// setting the sizes and bounds:
 	heightMapBuilder.SetDestSize(width, height);
-	heightMapBuilder.SetBounds(1.0, 5.0, 1.0, 5.0);
-	// building
+	heightMapBuilder.SetBounds(6.0, 10.0, 1.0, 5.0);
 	heightMapBuilder.Build();
 
 	// creating the image

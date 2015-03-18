@@ -65,6 +65,12 @@
     <ClInclude Include="TerrainPCH.h">
       <Filter>TerrainLib</Filter>
     </ClInclude>
+    <ClInclude Include="Mob.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stb_image.c">
@@ -118,12 +124,24 @@
     <ClCompile Include="TerrainPCH.cpp">
       <Filter>TerrainLib</Filter>
     </ClCompile>
+    <ClCompile Include="Mob.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\gaussianblur.fp">
       <Filter>Data</Filter>
     </None>
     <None Include="Data\gaussianblur.vp">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="Data\simple.fp">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="Data\simple.vp">
       <Filter>Data</Filter>
     </None>
   </ItemGroup>

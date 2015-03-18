@@ -409,9 +409,9 @@ void Terrain::Render()
 {
 
 
-#if _DEBUG
+//#if _DEBUG
 	DebugRender();
-#endif
+//#endif
 
 }
 
@@ -429,6 +429,7 @@ void Terrain::RenderNormals()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_GLTextures[0]);
+	glScalef(1, 5, 1);
 	glBegin( GL_TRIANGLES );
 	{
 		for (unsigned long int i = 0; i < m_IndexBuffer.size() ; i+=6)

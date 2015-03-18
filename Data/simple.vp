@@ -1,0 +1,8 @@
+attribute vec4 InVertex;
+attribute vec2 InTexCoord0;
+
+void main()
+{
+  gl_Position = gl_ModelViewProjectionMatrix * InVertex;
+  gl_TexCoord[0] = vec4(InTexCoord0.st, 0.0, 0.0);
+}

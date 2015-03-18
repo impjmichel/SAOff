@@ -10,6 +10,7 @@
 #include <btBulletDynamicsCommon.h>
 #include <GL/glew.h>
 #include <iostream>
+#include "Shader.h"
 
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
