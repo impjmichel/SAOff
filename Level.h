@@ -14,6 +14,7 @@ class btDiscreteDynamicsWorld;
 class PositionalDevice;
 class DigitalDevice;
 class Skybox;
+class Terrain;
 
 class Level{
 private:
@@ -41,6 +42,7 @@ private:
 	//End Keyboard
 
 public:
+	Terrain *g_Terrain;// (50, 50);
 	std::vector<Cube *> cubeList;
 	Floor *f;
 	Skybox *skybox;

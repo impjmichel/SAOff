@@ -24,7 +24,9 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="TerrainManager.h" />
+    <ClInclude Include="TerrainPCH.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -41,7 +43,9 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.c" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainManager.cpp" />
+    <ClCompile Include="TerrainPCH.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\gaussianblur.fp" />

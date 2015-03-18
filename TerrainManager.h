@@ -6,6 +6,6 @@ class TerrainManager
 public:
 	TerrainManager();
 	~TerrainManager();
-	bool CreateRandomTerrain();
+	unsigned char * CreateRandomTerrain(unsigned int width, unsigned int height);
 };
 

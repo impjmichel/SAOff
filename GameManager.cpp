@@ -10,7 +10,6 @@
 #include <iostream>
 #include <ctime>
 #include <cmath>
-#include "TerrainManager.h"
 
 GameManager* GameManager::getInstance()
 {
@@ -20,8 +19,6 @@ GameManager* GameManager::getInstance()
 
 void GameManager::init()
 {
-	TerrainManager manager;
-	manager.CreateRandomTerrain();
 
 	level = new Level();
 	renderManager = new RenderManager();

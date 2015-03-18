@@ -4,10 +4,13 @@
 #include "Cube.h"
 #include "Camera.h"
 #include "Skybox.h"
+#include "Terrain.h"
 #include <VrLib\Application.h>
 #include <ctime>
 #include <btBulletDynamicsCommon.h>
 #include <GL/glew.h>
+#include <iostream>
+
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 {
@@ -27,6 +30,25 @@ bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 
 Level::Level()
 {
+	// temporary stuff ( Terrain generator )
+	g_Terrain = new Terrain(1,1);
+	if (!g_Terrain->LoadHeightmap(257, 257))
+	{
+		std::cerr << "Failed to load heightmap for terrain!" << std::endl;
+	}
+	if (!g_Terrain->LoadTexture("Data/Textures/grass.jpg", 0))
+	{
+		std::cerr << "Failed to load terrain texture for texture stage 0!" << std::endl;
+	}
+	if (!g_Terrain->LoadTexture("Data/Textures/rock.png", 1))
+	{
+		std::cerr << "Failed to load terrain texture for texture stage 1!" << std::endl;
+	}
+	if (!g_Terrain->LoadTexture("Data/Textures/snow.jpg", 2))
+	{
+		std::cerr << "Failed to load terrain texture for texture stage 2!" << std::endl;
+	}
+
 	head = new PositionalDevice();
 	WKey = new DigitalDevice();
 	AKey = new DigitalDevice();
@@ -215,7 +237,7 @@ void Level::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	const float LightPosition[4] = { 0.0f, 1.0f, 0.0f, 0.0f };
+	const float LightPosition[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
 	glEnable(GL_MULTISAMPLE_ARB);
 	glPushMatrix();
 	InitCameraRotation();
@@ -229,7 +251,8 @@ void Level::draw()
 		cube->draw();
 	}
 
-	f->draw();
+	g_Terrain->Render();
+	//f->draw();
 	glPopMatrix();
 	glDisable(GL_MULTISAMPLE_ARB);
 }

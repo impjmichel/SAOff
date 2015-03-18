@@ -1,8 +1,10 @@
 #include <noise\noise.h>
 #include "noiseutils\noiseutils.h"
 #include "TerrainManager.h"
+#include <iostream>
 
 using namespace noise;
+using namespace std;
 
 TerrainManager::TerrainManager()
 {
@@ -13,7 +15,7 @@ TerrainManager::~TerrainManager()
 {
 }
 
-bool TerrainManager::CreateRandomTerrain()
+unsigned char * TerrainManager::CreateRandomTerrain( unsigned int width, unsigned int height)
 {
 	bool success = false;
 	// preparing
@@ -23,7 +25,7 @@ bool TerrainManager::CreateRandomTerrain()
 	heightMapBuilder.SetSourceModule(myModule);
 	heightMapBuilder.SetDestNoiseMap(heightMap);
 	// setting the sizes and bounds:
-	heightMapBuilder.SetDestSize(256, 256);
+	heightMapBuilder.SetDestSize(width, height);
 	heightMapBuilder.SetBounds(1.0, 5.0, 1.0, 5.0);
 	// building
 	heightMapBuilder.Build();
@@ -35,11 +37,16 @@ bool TerrainManager::CreateRandomTerrain()
 	renderer.SetDestImage(image);
 	renderer.Render();
 
-	// writing the image to file
-	utils::WriterBMP writer;
-	writer.SetSourceImage(image);
-	writer.SetDestFilename("terrain.bmp");
-	writer.WriteDestFile();
+	// rewrite the image to byte array thingy that can be used by the Terrain
+	const int size = image.GetWidth() * image.GetHeight();
+	unsigned char * map = new unsigned char[size];
 
-	return success;
+	for (int y = 0; y < image.GetHeight(); ++y)
+	{
+		for (int x = 0; x < image.GetWidth(); ++x)
+		{
+			map[y * image.GetWidth() + x] = image.GetValue(x, y).red;
+		}
+	}
+	return map;
 }
