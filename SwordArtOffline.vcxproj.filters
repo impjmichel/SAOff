@@ -56,9 +56,6 @@
     <ClInclude Include="Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TerrainManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Terrain.h">
       <Filter>TerrainLib</Filter>
     </ClInclude>
@@ -70,6 +67,15 @@
     </ClInclude>
     <ClInclude Include="ObjModel.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TerrainManager.h">
+      <Filter>TerrainLib</Filter>
+    </ClInclude>
+    <ClInclude Include="FlatLandManager.h">
+      <Filter>TerrainLib</Filter>
+    </ClInclude>
+    <ClInclude Include="MountainManager.h">
+      <Filter>TerrainLib</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -112,9 +118,6 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TerrainManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Libs\noiseutils\noiseutils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,6 +132,15 @@
     </ClCompile>
     <ClCompile Include="ObjModel.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TerrainManager.cpp">
+      <Filter>TerrainLib</Filter>
+    </ClCompile>
+    <ClCompile Include="FlatLandManager.cpp">
+      <Filter>TerrainLib</Filter>
+    </ClCompile>
+    <ClCompile Include="MountainManager.cpp">
+      <Filter>TerrainLib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

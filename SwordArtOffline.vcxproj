@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="FlatLandManager.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
@@ -20,6 +21,7 @@
     <ClInclude Include="Level.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Mob.h" />
+    <ClInclude Include="MountainManager.h" />
     <ClInclude Include="ObjModel.h" />
     <ClInclude Include="PostProcessing.h" />
     <ClInclude Include="RenderManager.h" />
@@ -33,6 +35,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="FlatLandManager.cpp" />
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -41,6 +44,7 @@
     <ClCompile Include="Libs\noiseutils\noiseutils.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Mob.cpp" />
+    <ClCompile Include="MountainManager.cpp" />
     <ClCompile Include="ObjModel.cpp" />
     <ClCompile Include="PostProcessing.cpp" />
     <ClCompile Include="RenderManager.cpp" />

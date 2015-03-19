@@ -37,7 +37,8 @@ Level::Level()
 {
 	// temporary stuff ( Terrain generator )
 	g_Terrain = new Terrain(1,1);
-	if (!g_Terrain->LoadHeightmap(257, 257))
+	g_Terrain->init_MountainRange();
+	if (!g_Terrain->LoadHeightmap(65, 65))
 	{
 		std::cerr << "Failed to load heightmap for terrain!" << std::endl;
 	}
