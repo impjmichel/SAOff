@@ -7,6 +7,9 @@
 #include <gl/GL.h>
 
 class Texture;
+class btRigidBody;
+class btCollisionShape;
+class btDefaultMotionState;
 
 class ObjModel
 {
@@ -36,6 +39,9 @@ public: //private:
 	std::vector<ObjGroup*> groups;
 	std::vector<MaterialInfo*> materials;
 	GLuint _vertexArray;
+	btRigidBody *rigidBody;
+	btCollisionShape *groundShape;
+	btDefaultMotionState *myMotionState;
 
 	void loadMaterialFile(std::string fileName, std::string dirName);
 //public:

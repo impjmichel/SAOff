@@ -13,6 +13,7 @@
 #include <iostream>
 #include "Shader.h"
 #include "Mob.h"
+#include "ObjModel.h"
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -78,8 +79,6 @@ Level::Level()
 	RightKey->init("RightKey");
 
 	skybox = new Skybox();
-	mob = new Mob();
-	mob->init();
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -91,7 +90,7 @@ Level::Level()
 
 	//Creating a static shape which will act as ground	
 	{
-		f = new Floor();
+		//f = new Floor();
 		btTriangleMesh *tMesh = new btTriangleMesh();
 
 		Terrain::IndexBuffer m_IndexBuffer = g_Terrain->m_IndexBuffer;
@@ -124,11 +123,18 @@ Level::Level()
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
 		btRigidBody* body = new btRigidBody(rbInfo);
-		body->setUserPointer(&f);
+		//  body->setUserPointer(&f);
 		//	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		world->addRigidBody(body); //add the body to the dynamics world
-		//gContactProcessedCallback = &contactProcessedCallback;
 	}
+
+	{
+		mob = new Mob();
+		mob->init();
+		world->addRigidBody(mob->pObjModel->rigidBody);
+	}
+
+	gContactProcessedCallback = &contactProcessedCallback;
 }
 
 Level::~Level()
@@ -205,7 +211,7 @@ void Level::update()
 
 	srand(time(NULL));
 
-	if ((cubeList.size() < 100))
+	if ((cubeList.size() < 0))
 	{
 		btCollisionShape* colShape = new btBoxShape(btVector3(5, 5, 5));
 		btVector3 inertia;
@@ -246,6 +252,8 @@ void Level::update()
 		//else
 		++iter;
 	}
+
+	mob->update();
 }
 
 void Level::update(double frameTime, double totalTime)
@@ -254,9 +262,6 @@ void Level::update(double frameTime, double totalTime)
 	skybox->update(frameTime, totalTime);
 	update();
 }
-
-
-
 
 void Level::draw()
 {
@@ -277,7 +282,7 @@ void Level::draw()
 	}
 
 	g_Terrain->Render();
-	//mob->draw();
+	mob->draw();
 	//f->draw();
 	glPopMatrix();
 	glDisable(GL_MULTISAMPLE_ARB);

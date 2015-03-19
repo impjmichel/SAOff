@@ -1,6 +1,11 @@
+#version 410 compatibility
+
 uniform sampler2D texture;
+in vec2 textureCoord;
+
+out vec4 outputColor;
 
 void main()
 {
-    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); //texture2D(texture, gl_TexCoord[0].st);
+	outputColor = texture2D(texture, textureCoord);
 }

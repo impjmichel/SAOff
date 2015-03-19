@@ -6,6 +6,8 @@
 #include "stb_image.h"
 #include <algorithm>
 #include <glm/glm.hpp>
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -236,7 +238,12 @@ ObjModel::ObjModel(std::string fileName)
 			glm::vec2 t2(texcoords[(atoi(indices2[1].c_str())-1)*2+0],texcoords[(atoi(indices2[1].c_str())-1)*2+1]);
 			glm::vec2 t3(texcoords[(atoi(indices3[1].c_str())-1)*2+0],texcoords[(atoi(indices3[1].c_str())-1)*2+1]);
 
-			glm::vec3 n(normals[(atoi(indices1[2].c_str())-1)*3+0],normals[(atoi(indices1[2].c_str())-1)*3+1],normals[(atoi(indices1[2].c_str())-1)*3+2]);
+			glm::vec3 n;
+			
+			if (!normals.empty())
+				n = glm::vec3(normals[(atoi(indices1[2].c_str()) - 1) * 3 + 0], normals[(atoi(indices1[2].c_str()) - 1) * 3 + 1], normals[(atoi(indices1[2].c_str()) - 1) * 3 + 2]);
+			else
+				n = glm::vec3(0.0);
 
 			glm::vec4 tangent(calcTangentVector(p1,p2,p3,t1,t2,t3,n));
 
@@ -334,11 +341,11 @@ ObjModel::ObjModel(std::string fileName)
     glGenBuffers(1, &_vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, finalVertices.size()*sizeof(GLfloat), &finalVertices[0], GL_STATIC_DRAW);
-        
+    
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 48, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 48, BUFFER_OFFSET(12));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 48, BUFFER_OFFSET(12));
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 48, BUFFER_OFFSET(24));
 	glEnableVertexAttribArray(3);
@@ -346,7 +353,42 @@ ObjModel::ObjModel(std::string fileName)
         
     glBindVertexArray(0);        
 
+	btTriangleMesh *tMesh = new btTriangleMesh();
 
+	for (unsigned long int i = 0; i < finalVertices.size(); i += 12)
+	{
+		glm::vec3 t01 = ((glm::vec3)finalVertices[i + 0]);
+		btVector3 t1 = btVector3(t01.x, t01.y, t01.z);
+
+		glm::vec3 t02 = ((glm::vec3)finalVertices[i + 1]);
+		btVector3 t2 = btVector3(t02.x, t02.y, t02.z);
+
+		glm::vec3 t03 = ((glm::vec3)finalVertices[i + 2]);
+		btVector3 t3 = btVector3(t03.x, t03.y, t03.z);
+
+		tMesh->addTriangle(t1, t2, t3);
+	}
+
+	//groundShape = new btBvhTriangleMeshShape(tMesh, true);
+
+	groundShape = new btBoxShape(btVector3(0.5, 0.65, 1));
+
+	btScalar mass = 1.0; //rigidbody is static if mass is zero, otherwise dynamic
+	btVector3 localInertia(0, 0, 0);
+
+	groundShape->calculateLocalInertia(mass, localInertia);
+
+	btTransform groundTransform;
+	groundTransform.setIdentity();
+	groundTransform.setOrigin(btVector3(0, 2, 0));
+	btQuaternion quat(34.5, 0.0, 0.0);
+	const btQuaternion &quaternion = quat;
+	groundTransform.setRotation(quaternion);
+
+	myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+	rigidBody = new btRigidBody(rbInfo);
+	rigidBody->setUserPointer(this);
 }
 
 ObjModel::~ObjModel(void)
@@ -366,9 +408,9 @@ void ObjModel::draw(unsigned int shaderID)
 		MaterialInfo* material = materials[group->materialIndex];
 		if(material->hasTexture)
 		{
-			glActiveTexture(GL_TEXTURE0);
+			//glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, material->texture);
-			glUniform1f(loc, materials[group->materialIndex]->texture);
+			glUniform1f(loc, material->texture);
 		}
 		//if(material->bumpMap != NULL)
 		//{
@@ -379,6 +421,7 @@ void ObjModel::draw(unsigned int shaderID)
 		glDrawArrays(GL_TRIANGLES, group->start, group->end - group->start);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
 }
 
 unsigned int textureCreate(std::string filename)

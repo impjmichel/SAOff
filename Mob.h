@@ -13,6 +13,7 @@ public:
 	ObjModel *pObjModel;
 	void init();
 	void draw();
+	void update();
 };
 
 #endif
