@@ -1,4 +1,6 @@
 #pragma once;
+#include "TerrainManager.h"
+#include <string>
 
 class Terrain
 {
@@ -7,11 +9,15 @@ public:
 	typedef std::vector<unsigned int>     IndexBuffer;
 	PositionBuffer  m_PositionBuffer;
 	IndexBuffer     m_IndexBuffer;
+	std::string m_TexturePath;
+	TerrainManager* m_TerrainManager;
 
 	Terrain( float heightScale = 500.0f, float blockScale = 2.0f );
 	virtual ~Terrain();
 
 	void Terminate();
+	void init_FlatGrassLand();
+	void init_MountainRange();
 	bool LoadHeightmap(unsigned int width, unsigned int height );
 	bool LoadTexture( const std::string& filename, unsigned int textureStage = 0 );
 

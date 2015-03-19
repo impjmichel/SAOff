@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include "stb_image.h"
+#include "FlatLandManager.h"
+#include "MountainManager.h"
 using namespace std;
 
 // Enable mutitexture blending across the terrain
@@ -137,12 +139,23 @@ void Terrain::Terminate()
 	}
 }
 
+void Terrain::init_FlatGrassLand()
+{
+	m_TexturePath = "c:/VrCave/Development/SwordArtOffline/Data/grass4.png";
+	m_TerrainManager = new FlatLandManager();
+}
+void Terrain::init_MountainRange()
+{
+	m_TexturePath = "c:/VrCave/Development/SwordArtOffline/Data/rock.png";
+	m_TerrainManager = new MountainManager();
+}
+
 bool Terrain::LoadTexture( const std::string& filename, unsigned int textureStage /*= 0*/ )
 {
 	assert( textureStage < m_uiNumTextures );
 	DeleteTexture( m_GLTextures[textureStage] );
 	int width = 1024, height = 1024, bpp = 32;
-	unsigned char * data = stbi_load("c:/VrCave/Development/SwordArtOffline/Data/grass4.png", &width, &height, &bpp, 4);
+	unsigned char * data = stbi_load(m_TexturePath.c_str(), &width, &height, &bpp, 4);
 	glGenTextures(1, &m_GLTextures[textureStage]);
 	glBindTexture( GL_TEXTURE_2D, m_GLTextures[textureStage] );
 
@@ -186,8 +199,7 @@ bool Terrain::LoadTexture( const std::string& filename, unsigned int textureStag
 bool Terrain::LoadHeightmap(unsigned int width, unsigned int height )
 {
 	const int bytesPerPixel = 1;
-	TerrainManager manager;
-	unsigned char * heightmap = manager.CreateRandomTerrain(width, height);
+	unsigned char * heightmap = m_TerrainManager->CreateRandomTerrain(width, height);
 
 	unsigned int numVerts = width * height;
 	m_PositionBuffer.resize( numVerts );
@@ -374,7 +386,7 @@ float Terrain::GetHeightAt( const glm::vec3& position )
 	int v1 = v0 + 1;
 
 	if ( u0 >= 0 && u1 < (int)m_HeightmapDimensions.x && v0 >= 0 && v1 < (int)m_HeightmapDimensions.y )
-	{                    
+	{
 		glm::vec3 p00 = m_PositionBuffer[ ( v0 * m_HeightmapDimensions.x ) + u0 ];    // Top-left vertex
 		glm::vec3 p10 = m_PositionBuffer[ ( v0 * m_HeightmapDimensions.x ) + u1 ];    // Top-right vertex
 		glm::vec3 p01 = m_PositionBuffer[ ( v1 * m_HeightmapDimensions.x ) + u0 ];    // Bottom-left vertex
