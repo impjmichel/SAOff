@@ -72,3 +72,8 @@ unsigned char * FlatLandManager::CreateRandomTerrain(unsigned int width, unsigne
 	}
 	return map;
 }
+
+void FlatLandManager::createVegetation(int amount)
+{
+	// TODO: implement this with models for flatland terrain, maybe forrest, maybe other... maybe more polymorphism needed.
+}

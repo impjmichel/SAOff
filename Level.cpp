@@ -37,7 +37,7 @@ Level::Level()
 {
 	// temporary stuff ( Terrain generator )
 	g_Terrain = new Terrain(1,1);
-	g_Terrain->init_MountainRange();
+	g_Terrain->init_FlatGrassLand();
 	if (!g_Terrain->LoadHeightmap(65, 65))
 	{
 		std::cerr << "Failed to load heightmap for terrain!" << std::endl;
@@ -135,6 +135,11 @@ Level::Level()
 		world->addRigidBody(mob->pObjModel->rigidBody);
 	}
 
+	// adding vegetation to the terrain
+	{
+		g_Terrain->createVegetation(65);
+	}
+
 	gContactProcessedCallback = &contactProcessedCallback;
 }
 
@@ -212,7 +217,7 @@ void Level::update()
 
 	srand(time(NULL));
 
-	if ((cubeList.size() < 0))
+	if ((cubeList.size() < 100))
 	{
 		btCollisionShape* colShape = new btBoxShape(btVector3(5, 5, 5));
 		btVector3 inertia;

@@ -150,6 +150,11 @@ void Terrain::init_MountainRange()
 	m_TerrainManager = new MountainManager();
 }
 
+void Terrain::createVegetation(int amount)
+{
+	m_TerrainManager->createVegetation(amount);
+}
+
 bool Terrain::LoadTexture( const std::string& filename, unsigned int textureStage /*= 0*/ )
 {
 	assert( textureStage < m_uiNumTextures );

@@ -72,3 +72,8 @@ unsigned char * MountainManager::CreateRandomTerrain(unsigned int width, unsigne
 	}
 	return map;
 }
+
+void MountainManager::createVegetation(int amount)
+{
+	// TODO: implement this with models and spreading for mountain terrain.
+}
