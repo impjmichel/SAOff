@@ -20,6 +20,7 @@ public:
 	void init_MountainRange();
 	bool LoadHeightmap(unsigned int width, unsigned int height );
 	bool LoadTexture( const std::string& filename, unsigned int textureStage = 0 );
+	void createVegetation(int amount);
 
 	// Get the height of the terrain at a position in world space
 	float GetHeightAt( const glm::vec3& position );

@@ -7,4 +7,5 @@ public:
 	MountainManager();
 	~MountainManager();
 	unsigned char * CreateRandomTerrain(unsigned int width, unsigned int height);
+	void createVegetation(int amount);
 };
