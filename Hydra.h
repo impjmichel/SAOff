@@ -4,6 +4,8 @@
 #include <glm\glm.hpp>
 #include <VrLib/Device.h>
 
+class ObjModel;
+
 class Hydra
 {
 public:
@@ -12,18 +14,23 @@ public:
 	void init();
 
 private:
+	unsigned int shaderID;
 	PositionalDevice hydraRightPosition;
 	PositionalDevice hydraLeftPosition;
 	TwoDimensionDevice hydraRightJoystick;
 	TwoDimensionDevice hydraLeftJoystick;
 	AnalogDevice hydraLeftTrigger;
 	DigitalDevice hydraLeftBumper;
+	ObjModel *leftModel;
+	ObjModel *rightModel;
 
 	glm::vec4 hydraRightPositionVector;
 	glm::vec4 hydraRightOrientation;
 	glm::vec4 hydraLeftPositionVector;
 	glm::vec4 hydraLeftOrientation;
 	bool hydraEnabled = false;
+
+	void initHydraModels();
 };
 
 #endif
