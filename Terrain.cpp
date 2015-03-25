@@ -1,5 +1,6 @@
 #include "TerrainPCH.h"
 #include "Terrain.h"
+#include <btBulletDynamicsCommon.h>
 #include "TerrainManager.h"
 #include <iostream>
 #include <fstream>
@@ -150,9 +151,9 @@ void Terrain::init_MountainRange()
 	m_TerrainManager = new MountainManager();
 }
 
-void Terrain::createVegetation(int amount)
+void Terrain::createVegetation(int amount, btDiscreteDynamicsWorld* world)
 {
-	m_TerrainManager->createVegetation(amount);
+	m_TerrainManager->createVegetation(amount, world);
 }
 
 bool Terrain::LoadTexture( const std::string& filename, unsigned int textureStage /*= 0*/ )

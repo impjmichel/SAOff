@@ -17,19 +17,25 @@ void StaticEnvironment::init()
 
 void StaticEnvironment::draw()
 {
-	//test:
 	glUseProgram(shaderID);
-	glPushMatrix();
-	glScalef(0.5, 0.5, 0.5);
-
-	glScalef(1, 1, -1);
+	GLint loc = glGetUniformLocation(shaderID, "glow");
 	btTransform trans;
 	btScalar m[16];
+
+	//Normal draw
+	glDepthMask(GL_TRUE);
+	glUniform1i(loc, false);
+
+	glPushMatrix();
 	pObjModel->rigidBody->getMotionState()->getWorldTransform(trans);
 	trans.getOpenGLMatrix(m);
 	glMultMatrixf(m);
+	glScalef(0.5, 0.5, 0.5);
+
+	glTranslatef(0, -1, 0);
 	pObjModel->draw(shaderID);
 
 	glPopMatrix();
+
 	glUseProgram(0);
 }
