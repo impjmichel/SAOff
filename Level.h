@@ -16,6 +16,8 @@ class DigitalDevice;
 class Skybox;
 class Terrain;
 class Mob;
+class btRigidBody;
+class Hydra;
 
 class Level{
 private:
@@ -47,8 +49,9 @@ public:
 	std::vector<Cube *> cubeList;
 	Floor *f;
 	Skybox *skybox;
-	Mob *mob;
-	
+	std::vector<Mob *> mobs; 
+	btRigidBody* terrainBody;
+	Hydra *hydra;
 
 	Level();
 	~Level();

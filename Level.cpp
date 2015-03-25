@@ -15,6 +15,8 @@
 #include "Mob.h"
 #include "ObjModel.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "Hydra.h"
+#include "debug.h"
 
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
@@ -37,8 +39,8 @@ Level::Level()
 {
 	// temporary stuff ( Terrain generator )
 	g_Terrain = new Terrain(1,1);
-	g_Terrain->init_MountainRange();
-	if (!g_Terrain->LoadHeightmap(65, 65))
+	g_Terrain->init_FlatGrassLand();
+	if (!g_Terrain->LoadHeightmap(129, 129))
 	{
 		std::cerr << "Failed to load heightmap for terrain!" << std::endl;
 	}
@@ -80,6 +82,8 @@ Level::Level()
 	RightKey->init("RightKey");
 
 	skybox = new Skybox();
+	hydra = new Hydra();
+	hydra->init();
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -87,7 +91,10 @@ Level::Level()
 	solver = new btSequentialImpulseConstraintSolver();
 	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
-	world->setGravity(btVector3(0, -9.81f, 0));
+	world->setGravity(btVector3(0, -9.81f * 10., 0));
+
+	//debug* debug_1 = new debug();
+	//world->setDebugDrawer(debug_1);
 
 	//Creating a static shape which will act as ground	
 	{
@@ -99,13 +106,13 @@ Level::Level()
 		for (unsigned long int i = 0; i < m_IndexBuffer.size(); i += 3)
 		{
 			glm::vec3 t01 = ((glm::vec3)m_PositionBuffer[m_IndexBuffer[i + 0]]);
-			btVector3 t1 = btVector3(t01.x, t01.y, t01.z);
+			btVector3 t1 = btVector3(t01.x, (t01.y * 5.), t01.z);
 
 			glm::vec3 t02 = ((glm::vec3)m_PositionBuffer[m_IndexBuffer[i + 1]]);
-			btVector3 t2 = btVector3(t02.x, t02.y, t02.z);
+			btVector3 t2 = btVector3(t02.x, (t02.y * 5.), t02.z);
 
 			glm::vec3 t03 = ((glm::vec3)m_PositionBuffer[m_IndexBuffer[i + 2]]);
-			btVector3 t3 = btVector3(t03.x, t03.y, t03.z);
+			btVector3 t3 = btVector3(t03.x, (t03.y * 5.), t03.z);
 			
 			tMesh->addTriangle(t1, t2, t3);
 		}
@@ -123,16 +130,21 @@ Level::Level()
 
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-		btRigidBody* body = new btRigidBody(rbInfo);
+		terrainBody = new btRigidBody(rbInfo);
 		//  body->setUserPointer(&f);
 		//	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
-		world->addRigidBody(body); //add the body to the dynamics world
+		world->addRigidBody(terrainBody); //add the body to the dynamics world
 	}
 
 	{
-		mob = new Mob();
-		mob->init();
-		world->addRigidBody(mob->pObjModel->rigidBody);
+		for (int i = 0; i < 1; i++)
+		{
+			Mob *mob = new Mob();
+			mob->init();
+			world->addRigidBody(mob->pObjModel->rigidBody);
+			mobs.push_back(mob);
+		}
+		//world->add
 	}
 
 	gContactProcessedCallback = &contactProcessedCallback;
@@ -210,6 +222,8 @@ void Level::update()
 	}
 	//End of keyboard
 
+	hydra->update();
+
 	srand(time(NULL));
 
 	if ((cubeList.size() < 0))
@@ -254,7 +268,12 @@ void Level::update()
 		++iter;
 	}
 
-	mob->update();
+	std::vector<Mob *>::iterator iter2;
+	for (iter2 = mobs.begin(); iter2 != mobs.end();) {
+		(*iter2)->update();
+
+		++iter2;
+	}
 }
 
 void Level::update(double frameTime, double totalTime)
@@ -266,6 +285,9 @@ void Level::update(double frameTime, double totalTime)
 
 void Level::draw()
 {
+	float InitialModelView[16];
+	glGetFloatv(GL_MODELVIEW_MATRIX, &InitialModelView[0]);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	const float LightPosition[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
@@ -277,13 +299,36 @@ void Level::draw()
 
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
 
+	//glPushMatrix();
+	//glScalef(1, 5, 1);
+	//world->debugDrawWorld();
+	//glPopMatrix();
+
+	hydra->draw(InitialModelView);
+
 	for each (Cube *cube in cubeList)
 	{
 		cube->draw();
 	}
 
+	glPushMatrix();
+	btTransform trans;
+	btScalar m[16];
+	//glScalef(1, 1, -1);
+	//Try drawing the debug world of bullet to see what's wrong with the terrain.
+	terrainBody->getMotionState()->getWorldTransform(trans);
+	trans.getOpenGLMatrix(m);
+	glMultMatrixf(m);
+
 	g_Terrain->Render();
-	mob->draw();
+
+	glPopMatrix();
+
+
+	for each (Mob *mob in mobs)
+	{
+		mob->draw();
+	}
 	//f->draw();
 	glPopMatrix();
 	glDisable(GL_MULTISAMPLE_ARB);

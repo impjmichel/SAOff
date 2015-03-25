@@ -77,6 +77,12 @@
     <ClInclude Include="MountainManager.h">
       <Filter>TerrainLib</Filter>
     </ClInclude>
+    <ClInclude Include="Hydra.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stb_image.c">
@@ -141,6 +147,12 @@
     </ClCompile>
     <ClCompile Include="MountainManager.cpp">
       <Filter>TerrainLib</Filter>
+    </ClCompile>
+    <ClCompile Include="Hydra.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

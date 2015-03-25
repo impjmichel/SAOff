@@ -6,14 +6,21 @@
 #include <windows.h>
 #include <gl/GL.h>
 
+#include <map>
+#include <string>
+
+#define PI 3.14159265358979323846
+#define TO_RADIANS(X) X / 180. * PI
+
 class Texture;
 class btRigidBody;
 class btCollisionShape;
-class btDefaultMotionState;
+struct btDefaultMotionState;
 
 class ObjModel
 {
 public: //private:
+
 	class MaterialInfo
 	{
 	public:
@@ -36,18 +43,25 @@ public: //private:
 		int materialIndex;
 	};
 
-	std::vector<ObjGroup*> groups;
-	std::vector<MaterialInfo*> materials;
-	GLuint _vertexArray;
+	class ObjModelCore
+	{
+	public:
+		std::vector<ObjGroup*> groups;
+		std::vector<MaterialInfo*> materials;
+		GLuint _vertexArray;
+	};
+
 	btRigidBody *rigidBody;
 	btCollisionShape *groundShape;
 	btDefaultMotionState *myMotionState;
+	ObjModelCore *objModelCore;
+
 
 	void loadMaterialFile(std::string fileName, std::string dirName);
 //public:
 	ObjModel(std::string filename);
+	void ObjModel::createRigidBody();
 	~ObjModel(void);
 
 	void draw(unsigned int shaderID);
 };
-

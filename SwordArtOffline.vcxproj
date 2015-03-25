@@ -13,11 +13,13 @@
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="debug.h" />
     <ClInclude Include="FlatLandManager.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GaussianBlur.h" />
+    <ClInclude Include="Hydra.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Mob.h" />
@@ -35,11 +37,13 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="debug.cpp" />
     <ClCompile Include="FlatLandManager.cpp" />
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GaussianBlur.cpp" />
+    <ClCompile Include="Hydra.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="Libs\noiseutils\noiseutils.cpp" />
     <ClCompile Include="Main.cpp" />

@@ -8,8 +8,12 @@
 #include <glm/glm.hpp>
 #include <btBulletCollisionCommon.h>
 #include <btBulletDynamicsCommon.h>
+#include <map>
+#include <string>
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
+std::map<std::string, ObjModel::ObjModelCore *> buffer;
 
 std::string replace(std::string str, std::string toReplace, std::string replacement)
 {
@@ -157,10 +161,65 @@ glm::vec4 calcTangentVector(
 }
 
 
+void ObjModel::createRigidBody()
+{
+	//btTriangleMesh *tMesh = new btTriangleMesh();
 
+	//for (unsigned long int i = 0; i < finalVertices.size(); i += 12)
+	//{
+	//	glm::vec3 t01 = ((glm::vec3)finalVertices[i + 0]);
+	//	btVector3 t1 = btVector3(t01.x, t01.y, t01.z);
+
+	//	glm::vec3 t02 = ((glm::vec3)finalVertices[i + 1]);
+	//	btVector3 t2 = btVector3(t02.x, t02.y, t02.z);
+
+	//	glm::vec3 t03 = ((glm::vec3)finalVertices[i + 2]);
+	//	btVector3 t3 = btVector3(t03.x, t03.y, t03.z);
+
+	//	tMesh->addTriangle(t1, t2, t3);
+	//}
+
+	//groundShape = new btBvhTriangleMeshShape(tMesh, true);
+
+	groundShape = new btBoxShape(btVector3(0.2, 0.45, 1.0));
+
+	btScalar mass = 50.0; //rigidbody is static if mass is zero, otherwise dynamic
+	btVector3 localInertia(0, 0, 0);
+
+	groundShape->calculateLocalInertia(mass, localInertia);
+
+	btTransform groundTransform;
+	groundTransform.setIdentity();
+	groundTransform.setOrigin(btVector3(0, 2, 0));
+	//btQuaternion quat(34.5, 0.0, 0.0);
+	btQuaternion quat(0, 0, 0);
+	quat.setRotation(btVector3(0.0, 1.0, 0.0), TO_RADIANS(180));
+	const btQuaternion &quaternion = quat;
+	groundTransform.setRotation(quaternion);
+
+	myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+	rigidBody = new btRigidBody(rbInfo);
+	rigidBody->setUserPointer(this);
+
+	rigidBody->setAngularFactor(btVector3(0.0, 1.0, 0.0));
+}
 
 ObjModel::ObjModel(std::string fileName)
 {
+	//If allready in buffer, load that instead.
+	objModelCore = buffer[fileName];
+	if (objModelCore == nullptr)
+	{
+		objModelCore = new ObjModelCore();
+		buffer[fileName] = objModelCore;
+	}
+	else
+	{
+		createRigidBody();
+		return;
+	}
+
 	std::string dirName = fileName;
 	if(dirName.rfind("/") != std::string::npos)
 		dirName = dirName.substr(0, dirName.rfind("/"));
@@ -309,14 +368,14 @@ ObjModel::ObjModel(std::string fileName)
 		else if(params[0] == "usemtl")
 		{
 			if(currentGroup->end != -1)
-				groups.push_back(currentGroup);
+				objModelCore->groups.push_back(currentGroup);
 			currentGroup = new ObjGroup();
 			currentGroup->start = finalVertices.size()/12;
 			currentGroup->materialIndex = -1;
 
-			for(size_t i = 0; i < materials.size(); i++)
+			for (size_t i = 0; i < objModelCore->materials.size(); i++)
 			{
-				MaterialInfo* info = materials[i];
+				MaterialInfo* info = objModelCore->materials[i];
 				if(info->name == params[1])
 				{
 					currentGroup->materialIndex = i;
@@ -331,11 +390,11 @@ ObjModel::ObjModel(std::string fileName)
 
 	}
 
-	groups.push_back(currentGroup);
+	objModelCore->groups.push_back(currentGroup);
 
 
-    glGenVertexArrays(1, &_vertexArray);
-    glBindVertexArray(_vertexArray);
+	glGenVertexArrays(1, &objModelCore->_vertexArray);
+	glBindVertexArray(objModelCore->_vertexArray);
         
     GLuint _vertexBuffer;
     glGenBuffers(1, &_vertexBuffer);
@@ -351,44 +410,9 @@ ObjModel::ObjModel(std::string fileName)
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 48, BUFFER_OFFSET(32));
         
-    glBindVertexArray(0);        
+    glBindVertexArray(0);
 
-	btTriangleMesh *tMesh = new btTriangleMesh();
-
-	for (unsigned long int i = 0; i < finalVertices.size(); i += 12)
-	{
-		glm::vec3 t01 = ((glm::vec3)finalVertices[i + 0]);
-		btVector3 t1 = btVector3(t01.x, t01.y, t01.z);
-
-		glm::vec3 t02 = ((glm::vec3)finalVertices[i + 1]);
-		btVector3 t2 = btVector3(t02.x, t02.y, t02.z);
-
-		glm::vec3 t03 = ((glm::vec3)finalVertices[i + 2]);
-		btVector3 t3 = btVector3(t03.x, t03.y, t03.z);
-
-		tMesh->addTriangle(t1, t2, t3);
-	}
-
-	//groundShape = new btBvhTriangleMeshShape(tMesh, true);
-
-	groundShape = new btBoxShape(btVector3(0.5, 0.65, 1));
-
-	btScalar mass = 1.0; //rigidbody is static if mass is zero, otherwise dynamic
-	btVector3 localInertia(0, 0, 0);
-
-	groundShape->calculateLocalInertia(mass, localInertia);
-
-	btTransform groundTransform;
-	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0, 2, 0));
-	btQuaternion quat(34.5, 0.0, 0.0);
-	const btQuaternion &quaternion = quat;
-	groundTransform.setRotation(quaternion);
-
-	myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-	rigidBody = new btRigidBody(rbInfo);
-	rigidBody->setUserPointer(this);
+	createRigidBody();
 }
 
 ObjModel::~ObjModel(void)
@@ -397,15 +421,15 @@ ObjModel::~ObjModel(void)
 
 void ObjModel::draw(unsigned int shaderID)
 {
-	glBindVertexArray(_vertexArray);
+	glBindVertexArray(objModelCore->_vertexArray);
 	glBindAttribLocation(shaderID, 0, "InVertex");
 	glBindAttribLocation(shaderID, 2, "InTexCoord0");
 	GLint loc = glGetUniformLocation(shaderID, "texture");
 
-	for(size_t i = 0; i < groups.size(); i++)
+	for (size_t i = 0; i < objModelCore->groups.size(); i++)
 	{
-		ObjGroup* group = groups[i];
-		MaterialInfo* material = materials[group->materialIndex];
+		ObjGroup* group = objModelCore->groups[i];
+		MaterialInfo* material = objModelCore->materials[group->materialIndex];
 		if(material->hasTexture)
 		{
 			//glActiveTexture(GL_TEXTURE0);
@@ -487,7 +511,7 @@ void ObjModel::loadMaterialFile( std::string fileName, std::string dirName )
 		{
 			if(currentMaterial != NULL)
 			{
-				materials.push_back(currentMaterial);
+				objModelCore->materials.push_back(currentMaterial);
 			}
 			currentMaterial = new MaterialInfo();
 			currentMaterial->name = params[1];
@@ -507,7 +531,7 @@ void ObjModel::loadMaterialFile( std::string fileName, std::string dirName )
 			std::cout<<"Didn't parse "<<params[0]<<" in material file"<<std::endl;
 	}
 	if(currentMaterial != NULL)
-		materials.push_back(currentMaterial);
+		objModelCore->materials.push_back(currentMaterial);
 
 }
 
