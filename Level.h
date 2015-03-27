@@ -18,6 +18,7 @@ class Terrain;
 class Mob;
 class btRigidBody;
 class Hydra;
+class CameraCharacter;
 
 class Level{
 private:
@@ -52,6 +53,7 @@ public:
 	std::vector<Mob *> mobs; 
 	btRigidBody* terrainBody;
 	Hydra *hydra;
+	CameraCharacter *cameraCharacter;
 
 	Level();
 	~Level();

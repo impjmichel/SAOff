@@ -17,19 +17,19 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Hydra.h"
 #include "debug.h"
-
+#include "CameraCharacter.h"
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 {
-	if (((btRigidBody*)body0)->getUserPointer() == &GameManager::getInstance()->level->f)
+	if (((btRigidBody*)body0)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
 	{
 		btVector3 velocity = ((btRigidBody*)body1)->getLinearVelocity();
-		((btRigidBody*)body1)->setLinearVelocity(btVector3(velocity.x(), 20, velocity.z()));
+		((btRigidBody*)body1)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
 	}
-	else if (((btRigidBody*)body1)->getUserPointer() == &GameManager::getInstance()->level->f)
+	else if (((btRigidBody*)body1)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
 	{
 		btVector3 velocity = ((btRigidBody*)body0)->getLinearVelocity();
-		((btRigidBody*)body0)->setLinearVelocity(btVector3(velocity.x(), 20, velocity.z()));
+		((btRigidBody*)body0)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
 	}
 
 	return false;
@@ -84,6 +84,8 @@ Level::Level()
 	skybox = new Skybox();
 	hydra = new Hydra();
 	hydra->init();
+	cameraCharacter = new CameraCharacter();
+	cameraCharacter->init();
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -92,7 +94,6 @@ Level::Level()
 	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
 	world->setGravity(btVector3(0, -9.81f * 10., 0));
-
 	//debug* debug_1 = new debug();
 	//world->setDebugDrawer(debug_1);
 
@@ -131,7 +132,7 @@ Level::Level()
 		btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 		btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
 		terrainBody = new btRigidBody(rbInfo);
-		//  body->setUserPointer(&f);
+		//terrainBody->setUserPointer(terrainBody);
 		//	body->setCollisionFlags(body->getCollisionFlags() | btCollisionObject::CF_NO_CONTACT_RESPONSE);
 		world->addRigidBody(terrainBody); //add the body to the dynamics world
 	}
@@ -224,6 +225,8 @@ void Level::update()
 
 	hydra->update();
 
+	cameraCharacter->update();
+
 	srand(time(NULL));
 
 	if ((cubeList.size() < 0))
@@ -306,11 +309,13 @@ void Level::draw()
 
 	hydra->draw(InitialModelView);
 
+	cameraCharacter->draw();
+
 	for each (Cube *cube in cubeList)
 	{
 		cube->draw();
 	}
-
+	glm::value_ptr(glm::mat4());
 	glPushMatrix();
 	btTransform trans;
 	btScalar m[16];

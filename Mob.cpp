@@ -113,7 +113,7 @@ void Mob::update()
 
 	//Rotate front of wolf to face his velocity
 	btQuaternion qNewOrientation;
-	qNewOrientation.setEuler(360 - atan2(vec.z(), vec.x()), 0, 0);
+	qNewOrientation.setEuler(PI * 0.5 - atan2(vec.z(), vec.x()), 0, 0);//360 - 
 	btTransform transBody(trans);
 	transBody.setRotation(qNewOrientation);
 	pObjModel->rigidBody->setCenterOfMassTransform(transBody);
