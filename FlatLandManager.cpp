@@ -1,8 +1,12 @@
 #include "FlatLandManager.h"
 #include <noise\noise.h>
 #include "noiseutils\noiseutils.h"
+#include "StaticEnvironment.h"
 #include <iostream>
 #include <ctime>
+#include <btBulletDynamicsCommon.h>
+#include "ObjModel.h"
+#include <btBulletCollisionCommon.h>
 
 using namespace noise;
 using namespace std;
@@ -73,7 +77,14 @@ unsigned char * FlatLandManager::CreateRandomTerrain(unsigned int width, unsigne
 	return map;
 }
 
-void FlatLandManager::createVegetation(int amount)
+void FlatLandManager::createVegetation(int amount, btDiscreteDynamicsWorld* world)
 {
 	// TODO: implement this with models for flatland terrain, maybe forrest, maybe other... maybe more polymorphism needed.
+	for (int i = 0; i < amount; ++i)
+	{
+		StaticEnvironment *vegetation = new StaticEnvironment();
+		vegetation->init();
+		world->addRigidBody(vegetation->pObjModel->rigidBody);
+		environmentObjects.push_back(vegetation);
+	}
 }

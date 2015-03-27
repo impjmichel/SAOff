@@ -3,9 +3,15 @@
 #include <VrLib\Application.h>
 #include <VrLib\Device.h>
 #include <GL/glew.h>
+#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
+#include "ObjModel.h"
+#include "Shader.h"
 
 void Hydra::init()
 {
+	shaderID = initShader("simple");
+
 	hydraRightPosition.init("RightNunchuck");
 	hydraLeftPosition.init("LeftNunchuck");
 	hydraRightJoystick.init("RightJoystick");
@@ -13,50 +19,56 @@ void Hydra::init()
 
 	hydraLeftTrigger.init("LeftTrigger");
 	hydraLeftBumper.init("LeftBumper");
+
+	initHydraModels();
 }
 
 void Hydra::draw(float InitialModelView[16])
 {
-	//Right Hydra
 	if (!hydraEnabled)
 	{
 		return;
 	}
 
 	glPushMatrix();
-
+	btScalar m[16];
+	btTransform trans;
+	
 	//Right Hydra
-
 	//NOTE: This part is currently very dependend of the direction the hydra-globe is pointing, be sure to make the razer logo point towards you.
-
 	//Hydra draw
+	glUseProgram(shaderID);
 	glPushMatrix();
 	glLoadMatrixf(InitialModelView);
+	rightModel->rigidBody->getMotionState()->getWorldTransform(trans);
+	trans.getOpenGLMatrix(m);
+	glMultMatrixf(m);
+	glScalef(0.001, 0.001, 0.001);
+
 	glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 2, -2);// hydraRightPositionVector[2]);
-	glLineWidth(5);
-	glDisable(GL_TEXTURE_2D);
-	glColor3f(1, 0, 0);
-	glBegin(GL_LINES);
-	glVertex3f(0.50f, 0.0f, 0.0f);
-	glVertex3f(hydraRightOrientation[0] * 3 + 0.50, hydraRightOrientation[1] * 3, -hydraRightOrientation[3] * 3);
-	glEnd();
+
+	rightModel->draw(shaderID);
+
 	glPopMatrix();
-	//End of hydra draw=
+	glUseProgram(0);
+	//End of hydra draw
 
 	//Left Hydra
-
 	//Hydra draw
+	glUseProgram(shaderID);
 	glPushMatrix();
 	glLoadMatrixf(InitialModelView);
-	glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 2, -2); //hydraLeftPositionVector[2]);
-	glLineWidth(5);
-	glDisable(GL_TEXTURE_2D);
-	glColor3f(0, 1, 0);
-	glBegin(GL_LINES);
-	glVertex3f(-0.50f, 0.0f, 0.0f);
-	glVertex3f(hydraLeftOrientation[0] * 3 - 0.50, hydraLeftOrientation[1] * 3, -hydraLeftOrientation[3] * 3);
-	glEnd();
+	leftModel->rigidBody->getMotionState()->getWorldTransform(trans);
+	trans.getOpenGLMatrix(m);
+	glMultMatrixf(m);
+	glScalef(0.001, 0.001, 0.001);
+
+	glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 2, -2);// hydraLeftPositionVector[2]);
+
+	leftModel->draw(shaderID);
+
 	glPopMatrix();
+	glUseProgram(0);
 	//End of hydra draw
 
 	glPopMatrix();
@@ -116,4 +128,10 @@ void Hydra::update()
 		if (hydraLeftTrigger.getData() - 0.1 > 0)
 			MoveDownward();
 	}
+}
+
+void Hydra::initHydraModels()
+{
+	rightModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword01\\rusword.obj");
+	leftModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword02\\rusword.obj");
 }

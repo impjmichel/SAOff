@@ -3,6 +3,7 @@
 #include "noiseutils\noiseutils.h"
 #include <iostream>
 #include <ctime>
+#include <btBulletDynamicsCommon.h>
 
 using namespace noise;
 using namespace std;
@@ -73,7 +74,7 @@ unsigned char * MountainManager::CreateRandomTerrain(unsigned int width, unsigne
 	return map;
 }
 
-void MountainManager::createVegetation(int amount)
+void MountainManager::createVegetation(int amount, btDiscreteDynamicsWorld* world)
 {
 	// TODO: implement this with models and spreading for mountain terrain.
 }
