@@ -183,7 +183,7 @@ void ObjModel::createRigidBody()
 
 	groundShape = new btBoxShape(btVector3(0.2, 0.45, 1.0));
 
-	btScalar mass = 50.0; //rigidbody is static if mass is zero, otherwise dynamic
+	btScalar mass = 10.0; //rigidbody is static if mass is zero, otherwise dynamic
 	btVector3 localInertia(0, 0, 0);
 
 	groundShape->calculateLocalInertia(mass, localInertia);

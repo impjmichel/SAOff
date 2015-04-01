@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraCharacter.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="FlatLandManager.h" />
@@ -37,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CameraCharacter.cpp" />
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="FlatLandManager.cpp" />
