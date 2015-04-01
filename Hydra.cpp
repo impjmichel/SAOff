@@ -7,6 +7,7 @@
 #include <btBulletDynamicsCommon.h>
 #include "ObjModel.h"
 #include "Shader.h"
+#include <glm/gtc/type_ptr.hpp>
 
 void Hydra::init()
 {
@@ -33,42 +34,60 @@ void Hydra::draw(float InitialModelView[16])
 	glPushMatrix();
 	btScalar m[16];
 	btTransform trans;
-	
+
 	//Right Hydra
 	//NOTE: This part is currently very dependend of the direction the hydra-globe is pointing, be sure to make the razer logo point towards you.
 	//Hydra draw
-	glUseProgram(shaderID);
-	glPushMatrix();
-	glLoadMatrixf(InitialModelView);
-	rightModel->rigidBody->getMotionState()->getWorldTransform(trans);
-	trans.getOpenGLMatrix(m);
-	glMultMatrixf(m);
-	glScalef(0.001, 0.001, 0.001);
+	{
+		glUseProgram(shaderID);
+		glPushMatrix();
+		glLoadMatrixf(InitialModelView);
+		rightModel->rigidBody->getMotionState()->getWorldTransform(trans);
+		trans.getOpenGLMatrix(m);
+		glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 1, -2);// hydraRightPositionVector[2]);
 
-	glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 2, -2);// hydraRightPositionVector[2]);
+		glm::mat4 old = hydraRightPosition.getData();
+		glm::mat4 r(old[0].x, old[0].y, old[0].z, old[0].w,
+					old[2].x, old[2].y, old[2].z, old[1].w,
+					old[1].x, old[1].y, old[1].z, old[2].w,
+					old[3].x, old[3].y, old[3].z, old[3].w);
 
-	rightModel->draw(shaderID);
+		glMultMatrixf(glm::value_ptr(r));
+		glRotatef(180, 0, 0, 1);
+		glScalef(0.0018, 0.0018, 0.0018);
 
-	glPopMatrix();
-	glUseProgram(0);
+		rightModel->draw(shaderID);
+
+		glPopMatrix();
+		glUseProgram(0);
+	}
 	//End of hydra draw
 
 	//Left Hydra
 	//Hydra draw
-	glUseProgram(shaderID);
-	glPushMatrix();
-	glLoadMatrixf(InitialModelView);
-	leftModel->rigidBody->getMotionState()->getWorldTransform(trans);
-	trans.getOpenGLMatrix(m);
-	glMultMatrixf(m);
-	glScalef(0.001, 0.001, 0.001);
+	{
+		glUseProgram(shaderID);
+		glPushMatrix();
+		glLoadMatrixf(InitialModelView);
+		leftModel->rigidBody->getMotionState()->getWorldTransform(trans);
+		trans.getOpenGLMatrix(m);
+		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1, -2);// hydraLeftPositionVector[2]);
 
-	glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 2, -2);// hydraLeftPositionVector[2]);
+		glm::mat4 old = hydraLeftPosition.getData();
+		glm::mat4 r(old[0].x, old[0].y, old[0].z, old[0].w,
+					old[2].x, old[2].y, old[2].z, old[1].w,
+					old[1].x, old[1].y, old[1].z, old[2].w,
+					old[3].x, old[3].y, old[3].z, old[3].w);
 
-	leftModel->draw(shaderID);
+		glMultMatrixf(glm::value_ptr(r));
+		glRotatef(180, 0, 0, 1);
+		glScalef(0.0018, 0.0018, 0.0018);
 
-	glPopMatrix();
-	glUseProgram(0);
+		leftModel->draw(shaderID);
+
+		glPopMatrix();
+		glUseProgram(0);
+	}
 	//End of hydra draw
 
 	glPopMatrix();
