@@ -21,16 +21,16 @@
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 {
-	if (((btRigidBody*)body0)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
-	{
-		btVector3 velocity = ((btRigidBody*)body1)->getLinearVelocity();
-		((btRigidBody*)body1)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
-	}
-	else if (((btRigidBody*)body1)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
-	{
-		btVector3 velocity = ((btRigidBody*)body0)->getLinearVelocity();
-		((btRigidBody*)body0)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
-	}
+	//if (((btRigidBody*)body0)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
+	//{
+	//	btVector3 velocity = ((btRigidBody*)body1)->getLinearVelocity();
+	//	((btRigidBody*)body1)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
+	//}
+	//else if (((btRigidBody*)body1)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
+	//{
+	//	btVector3 velocity = ((btRigidBody*)body0)->getLinearVelocity();
+	//	((btRigidBody*)body0)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
+	//}
 
 	return false;
 }
@@ -84,8 +84,6 @@ Level::Level()
 	skybox = new Skybox();
 	hydra = new Hydra();
 	hydra->init();
-	cameraCharacter = new CameraCharacter();
-	cameraCharacter->init();
 
 	broadphase = new btDbvtBroadphase();
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -93,9 +91,13 @@ Level::Level()
 	solver = new btSequentialImpulseConstraintSolver();
 	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
-	world->setGravity(btVector3(0, -9.81f * 10., 0));
+	world->setGravity(btVector3(0, -9.81f * 20., 0));
 	//debug* debug_1 = new debug();
 	//world->setDebugDrawer(debug_1);
+
+	cameraCharacter = new CameraCharacter();
+	cameraCharacter->init();
+	world->addRigidBody(cameraCharacter->rigidBody);
 
 	//Creating a static shape which will act as ground	
 	{
@@ -303,7 +305,6 @@ void Level::draw()
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
 
 	//glPushMatrix();
-	//glScalef(1, 5, 1);
 	//world->debugDrawWorld();
 	//glPopMatrix();
 
@@ -315,12 +316,12 @@ void Level::draw()
 	{
 		cube->draw();
 	}
-	glm::value_ptr(glm::mat4());
+
+	//glm::value_ptr(glm::mat4());
 	glPushMatrix();
 	btTransform trans;
 	btScalar m[16];
-	//glScalef(1, 1, -1);
-	//Try drawing the debug world of bullet to see what's wrong with the terrain.
+
 	terrainBody->getMotionState()->getWorldTransform(trans);
 	trans.getOpenGLMatrix(m);
 	glMultMatrixf(m);

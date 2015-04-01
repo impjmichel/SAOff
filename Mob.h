@@ -20,7 +20,7 @@ public:
 	void update();
 	float health = 100;
 	float maxHealth = 100;
-	float speed = 15;
+	float speed = 8;
 };
 
 #endif

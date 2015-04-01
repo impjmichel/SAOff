@@ -1,6 +1,8 @@
 #ifndef CAMERA_CHARACTER_H
 #define CAMERA_CHARACTER_H
 
+#define HEIGHT_OFFSET 1.5
+
 #include <btBulletCollisionCommon.h>
 
 class CameraCharacter{

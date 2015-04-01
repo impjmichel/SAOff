@@ -1,6 +1,8 @@
 #ifndef MY_APPLICATION_H
 #define MY_APPLICATION_H
 
+#define GLOBAL_UPDATE_RATE 1. / 30.
+
 #include <VrLib\Application.h>
 
 class RenderManager;
@@ -12,6 +14,7 @@ public:
 	RenderManager *renderManager;
 	Level *level;
 	float fpTime = 0;
+	float fpTimeUntillUpdate = 0;
 
 	static GameManager* getInstance();
 	void init();

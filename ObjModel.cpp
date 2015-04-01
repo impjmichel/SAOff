@@ -203,6 +203,8 @@ void ObjModel::createRigidBody()
 	rigidBody->setUserPointer(this);
 
 	rigidBody->setAngularFactor(btVector3(0.0, 1.0, 0.0));
+
+	rigidBody->setRestitution(1.5);
 }
 
 ObjModel::ObjModel(std::string fileName)

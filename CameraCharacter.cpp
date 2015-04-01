@@ -6,6 +6,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Camera.h"
 
+#include "GameManager.h"
+#include "Level.h"
+
 void CameraCharacter::draw()
 {
 	//glPushMatrix();
@@ -28,9 +31,9 @@ void CameraCharacter::draw()
 
 void CameraCharacter::init()
 {
-	groundShape = new btBoxShape(btVector3(1, 1, 1));
+	groundShape = new btBoxShape(btVector3(0.4, HEIGHT_OFFSET * 2., 0.4));
 
-	btScalar mass = 0.0; //rigidbody is static if mass is zero, otherwise dynamic
+	btScalar mass =	0.0; //rigidbody is static if mass is zero, otherwise dynamic
 	btVector3 localInertia(0, 0, 0);
 
 	groundShape->calculateLocalInertia(mass, localInertia);
@@ -49,7 +52,7 @@ void CameraCharacter::init()
 	rigidBody = new btRigidBody(rbInfo);
 	rigidBody->setUserPointer(rigidBody);
 
-	rigidBody->setRestitution(0);
+	rigidBody->setRestitution(1.5);
 
 	rigidBody->setAngularFactor(btVector3(0.0, 1.0, 0.0));
 }
@@ -66,8 +69,22 @@ void CameraCharacter::update()
 	//float yPosition = location[1];
 	//float zPosition = location[2];
 
-	btTransform tr;
-	myMotionState->getWorldTransform(tr);
-	tr.setOrigin(btVector3(fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate));
-	rigidBody->getMotionState()->setWorldTransform(tr);
+	btVector3 btFrom(fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate);
+	btVector3 btTo(fpCameraXCoordinate, -5000.0f, fpCameraZCoordinate);
+	btCollisionWorld::ClosestRayResultCallback res(btFrom, btTo);
+
+	GameManager::getInstance()->level->world->rayTest(btFrom, btTo, res); // m_btWorld is btDiscreteDynamicsWorld
+
+	float yCoord = HEIGHT_OFFSET;
+	if (res.hasHit()){
+		yCoord = (res.m_hitPointWorld.y() + HEIGHT_OFFSET);
+	}
+
+	//Activate
+	rigidBody->setActivationState(1);
+
+	btTransform transform = rigidBody->getCenterOfMassTransform();
+	transform.setOrigin(btVector3(fpCameraXCoordinate, yCoord, fpCameraZCoordinate));
+	fpCameraYCoordinate = yCoord;
+	rigidBody->setCenterOfMassTransform(transform);
 }

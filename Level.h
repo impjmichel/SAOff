@@ -26,7 +26,6 @@ private:
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
-	btDiscreteDynamicsWorld* world;
 
 	//oculus
 	PositionalDevice *head;
@@ -54,6 +53,7 @@ public:
 	btRigidBody* terrainBody;
 	Hydra *hydra;
 	CameraCharacter *cameraCharacter;
+	btDiscreteDynamicsWorld* world;
 
 	Level();
 	~Level();
