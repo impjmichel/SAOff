@@ -18,6 +18,7 @@
 #include "Hydra.h"
 #include "debug.h"
 #include "CameraCharacter.h"
+#include "Main.h"
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 {
@@ -288,7 +289,7 @@ void Level::update(double frameTime, double totalTime)
 	update();
 }
 
-void Level::draw()
+void Level::draw(DrawMode drawMode)
 {
 	float InitialModelView[16];
 	glGetFloatv(GL_MODELVIEW_MATRIX, &InitialModelView[0]);
@@ -304,9 +305,9 @@ void Level::draw()
 
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
 
-	//glPushMatrix();
-	//world->debugDrawWorld();
-	//glPopMatrix();
+#ifdef BULLET_DEBUG_DRAW
+	world->debugDrawWorld();
+#endif
 
 	hydra->draw(InitialModelView);
 
@@ -338,4 +339,100 @@ void Level::draw()
 	//f->draw();
 	glPopMatrix();
 	glDisable(GL_MULTISAMPLE_ARB);
+
+	//Draw Health
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+
+	//Draw healthborders
+	float healthPercentage = health / maxHealth;
+#ifndef SIMULATION_MODE
+	if (drawMode == DrawMode::LeftEye)
+	{
+		glColor4f(1 - healthPercentage, healthPercentage, 0, 0.5);
+		glBegin(GL_QUADS);
+
+		//Under
+		glVertex2f(-1, -1);
+		glVertex2f(1, -1);
+		glVertex2f(1, -0.8);
+		glVertex2f(-1, -0.8);
+
+		//Upper
+		glVertex2f(-1, 1);
+		glVertex2f(1, 1);
+		glVertex2f(1, 0.8);
+		glVertex2f(-1, 0.8);
+
+		//Left
+		glVertex2f(-0.8, -0.8);
+		glVertex2f(-1, -0.8);
+		glVertex2f(-1, 0.8);
+		glVertex2f(-0.8, 0.8);
+		glEnd();
+	}
+	else if (drawMode == DrawMode::RightEye)
+	{
+		glColor4f(1 - healthPercentage, healthPercentage, 0, 0.5);
+		glBegin(GL_QUADS);
+
+		//Under
+		glVertex2f(-1, -1);
+		glVertex2f(1, -1);
+		glVertex2f(1, -0.8);
+		glVertex2f(-1, -0.8);
+
+		//Upper
+		glVertex2f(-1, 1);
+		glVertex2f(1, 1);
+		glVertex2f(1, 0.8);
+		glVertex2f(-1, 0.8);
+
+		//Right
+		glVertex2f(0.8, -0.8);
+		glVertex2f(1, -0.8);
+		glVertex2f(1, 0.8);
+		glVertex2f(0.8, 0.8);
+		glEnd();
+	}
+	else if (drawMode == DrawMode::Simulation)
+	{
+#endif
+		glColor4f(1 - healthPercentage, healthPercentage, 0, 0.5);
+		glBegin(GL_QUADS);
+
+		//Under
+		glVertex2f(-1, -1);
+		glVertex2f(1, -1);
+		glVertex2f(1, -0.8);
+		glVertex2f(-1, -0.8);
+
+		//Upper
+		glVertex2f(-1, 1);
+		glVertex2f(1, 1);
+		glVertex2f(1, 0.8);
+		glVertex2f(-1, 0.8);
+
+		//Right
+		glVertex2f(0.8, -0.8);
+		glVertex2f(1, -0.8);
+		glVertex2f(1, 0.8);
+		glVertex2f(0.8, 0.8);
+
+		//Left
+		glVertex2f(-0.8, -0.8);
+		glVertex2f(-1, -0.8);
+		glVertex2f(-1, 0.8);
+		glVertex2f(-0.8, 0.8);
+		glEnd();
+#ifndef SIMULATION_MODE
+	}
+#endif
+	glPopMatrix();
+	glPopMatrix();
 }

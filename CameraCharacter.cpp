@@ -52,7 +52,7 @@ void CameraCharacter::init()
 	rigidBody = new btRigidBody(rbInfo);
 	rigidBody->setUserPointer(rigidBody);
 
-	rigidBody->setRestitution(1.5);
+	rigidBody->setRestitution(1.75);
 
 	rigidBody->setAngularFactor(btVector3(0.0, 1.0, 0.0));
 }

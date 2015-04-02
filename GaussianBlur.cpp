@@ -52,7 +52,10 @@ void GaussianBlur::drawToFBO(int oldFbo, int viewport[4])
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, framebufferID);
 	glViewport(0, 0, viewport[2], viewport[3]);
 
-	GameManager::getInstance()->level->draw();
+	if (viewport[0] == 0)
+		GameManager::getInstance()->level->draw(DrawMode::LeftEye);
+	else
+		GameManager::getInstance()->level->draw(DrawMode::RightEye);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, oldFbo);
 	glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);

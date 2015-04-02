@@ -1,6 +1,8 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
+//#define BULLET_DEBUG_DRAW
+
 #include <vector>
 #include <VrLib\Device.h>
 
@@ -19,6 +21,13 @@ class Mob;
 class btRigidBody;
 class Hydra;
 class CameraCharacter;
+
+enum DrawMode
+{
+	RightEye,
+	LeftEye,
+	Simulation
+};
 
 class Level{
 private:
@@ -57,9 +66,12 @@ public:
 
 	Level();
 	~Level();
-	void draw();
+	void draw(DrawMode drawMode);
 	void update();
 	void update(double frameTime, double totalTime);
+
+	float health = 100;
+	float maxHealth = 100;
 };
 
 #endif
