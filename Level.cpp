@@ -92,8 +92,8 @@ Level::Level()
 	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
 	world->setGravity(btVector3(0, -9.81f * 20., 0));
-	//debug* debug_1 = new debug();
-	//world->setDebugDrawer(debug_1);
+	debug* debug_1 = new debug();
+	world->setDebugDrawer(debug_1);
 
 	cameraCharacter = new CameraCharacter();
 	cameraCharacter->init();
@@ -305,7 +305,7 @@ void Level::draw()
 	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
 
 	//glPushMatrix();
-	//world->debugDrawWorld();
+	world->debugDrawWorld();
 	//glPopMatrix();
 
 	hydra->draw(InitialModelView);

@@ -8,6 +8,8 @@
 #include "ObjModel.h"
 #include "Shader.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "GameManager.h"
+#include "Level.h"
 
 void Hydra::init()
 {
@@ -47,12 +49,8 @@ void Hydra::draw(float InitialModelView[16])
 		glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 1, -2);// hydraRightPositionVector[2]);
 
 		glm::mat4 old = hydraRightPosition.getData();
-		glm::mat4 r(old[0].x, old[0].y, old[0].z, old[0].w,
-					old[2].x, old[2].y, old[2].z, old[1].w,
-					old[1].x, old[1].y, old[1].z, old[2].w,
-					old[3].x, old[3].y, old[3].z, old[3].w);
 
-		glMultMatrixf(glm::value_ptr(r));
+		glMultMatrixf(glm::value_ptr(getWorldMatrixFromHydra(old)));
 		glRotatef(180, 0, 0, 1);
 		glScalef(0.0018, 0.0018, 0.0018);
 
@@ -74,12 +72,8 @@ void Hydra::draw(float InitialModelView[16])
 		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1, -2);// hydraLeftPositionVector[2]);
 
 		glm::mat4 old = hydraLeftPosition.getData();
-		glm::mat4 r(old[0].x, old[0].y, old[0].z, old[0].w,
-					old[2].x, old[2].y, old[2].z, old[1].w,
-					old[1].x, old[1].y, old[1].z, old[2].w,
-					old[3].x, old[3].y, old[3].z, old[3].w);
 
-		glMultMatrixf(glm::value_ptr(r));
+		glMultMatrixf(glm::value_ptr(getWorldMatrixFromHydra(old)));
 		glRotatef(180, 0, 0, 1);
 		glScalef(0.0018, 0.0018, 0.0018);
 
@@ -97,6 +91,13 @@ void Hydra::update()
 {
 	if (hydraRightJoystick.isInitialized())
 	{
+		if (!initRigidbodies)
+		{
+			GameManager::getInstance()->level->world->addRigidBody(rightModel->rigidBody);
+			GameManager::getInstance()->level->world->addRigidBody(leftModel->rigidBody);
+			initRigidbodies = true;
+		}
+
 		glm::mat4 hydraMatrix = hydraRightPosition.getData();
 		hydraRightPositionVector = hydraMatrix * glm::vec4(0, 0, 0, 1);
 		hydraRightOrientation = glm::normalize((hydraMatrix * glm::vec4(0, 0, -1, 1)) - hydraRightPositionVector);
@@ -115,6 +116,18 @@ void Hydra::update()
 			else if (joystickData[1] + 0.1 < 0)
 				RotateDown();
 		}
+
+		//Activate Right
+		rightModel->rigidBody->setActivationState(1);
+
+		btTransform transform = rightModel->rigidBody->getCenterOfMassTransform();
+		transform.setOrigin(btVector3(hydraRightPositionVector.x, hydraRightPositionVector.y, hydraRightPositionVector.z));
+
+		auto v = glm::quat_cast(getWorldMatrixFromHydra(hydraRightPosition.getData()));
+
+		btQuaternion quat(v.x, v.y, v.z, v.w);
+		transform.setRotation(quat);
+		rightModel->rigidBody->setCenterOfMassTransform(transform);
 	}
 	if (hydraLeftJoystick.isInitialized())
 	{
@@ -136,6 +149,18 @@ void Hydra::update()
 			else if (joystickData[1] + 0.1 < 0)
 				MoveBackward();
 		}
+
+		//Activate Left
+		leftModel->rigidBody->setActivationState(1);
+
+		btTransform transform = leftModel->rigidBody->getCenterOfMassTransform();
+		transform.setOrigin(btVector3(hydraLeftPositionVector.x, hydraLeftPositionVector.y, hydraLeftPositionVector.z));
+
+		auto v = glm::quat_cast(getWorldMatrixFromHydra(hydraLeftPosition.getData()));
+
+		btQuaternion quat(v.x, v.y, v.z, v.w);
+		transform.setRotation(quat);
+		leftModel->rigidBody->setCenterOfMassTransform(transform);
 	}
 	if (hydraLeftBumper.isInitialized())
 	{
@@ -151,6 +176,18 @@ void Hydra::update()
 
 void Hydra::initHydraModels()
 {
-	rightModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword01\\rusword.obj");
-	leftModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword02\\rusword.obj");
+	btVector3 size = btVector3(0.1, 0.5, 2.0);
+	btScalar mass = 0;
+	rightModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword01\\rusword.obj", size, mass);
+	
+	leftModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword02\\rusword.obj", size, mass);
+}
+
+glm::mat4 Hydra::getWorldMatrixFromHydra(glm::mat4 old)
+{
+	glm::mat4 m(old[0].x, old[0].y, old[0].z, old[0].w,
+				old[2].x, old[2].y, old[2].z, old[1].w,
+				old[1].x, old[1].y, old[1].z, old[2].w,
+				old[3].x, old[3].y, old[3].z, old[3].w);
+	return m;
 }

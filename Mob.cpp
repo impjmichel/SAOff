@@ -16,7 +16,9 @@ void Mob::init()
 {
 	shaderID = initShader("simple");
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\portalbutton\\portalbutton.obj");
-	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf3\\Wolf.obj");
+	btVector3 size(0.2, 0.45, 1.0);
+	btScalar mass = 10.0;
+	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf3\\Wolf.obj", size, mass);
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf2\\Wolf.obj");
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\boss\\Mon.obj");
 

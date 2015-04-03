@@ -8,6 +8,8 @@
 
 #include <map>
 #include <string>
+#include <btBulletDynamicsCommon.h>
+#include <btBulletCollisionCommon.h>
 
 #define PI 3.14159265358979323846
 #define TO_RADIANS(X) X / 180. * PI
@@ -59,8 +61,8 @@ public: //private:
 
 	void loadMaterialFile(std::string fileName, std::string dirName);
 //public:
-	ObjModel(std::string filename);
-	void ObjModel::createRigidBody();
+	ObjModel(std::string filename, const btVector3 &size, btScalar mass);
+	void ObjModel::createRigidBody(const btVector3 &size, btScalar mass);
 	~ObjModel(void);
 
 	void draw(unsigned int shaderID);
