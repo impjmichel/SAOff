@@ -93,8 +93,11 @@ Level::Level()
 	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
 	world->setGravity(btVector3(0, -9.81f * 20., 0));
-	//debug* debug_1 = new debug();
-	//world->setDebugDrawer(debug_1);
+
+#ifdef BULLET_DEBUG_DRAW
+	debug* debug_1 = new debug();
+	world->setDebugDrawer(debug_1);
+#endif
 
 	cameraCharacter = new CameraCharacter();
 	cameraCharacter->init();
@@ -330,7 +333,6 @@ void Level::draw(DrawMode drawMode)
 	g_Terrain->Render();
 
 	glPopMatrix();
-
 
 	for each (Mob *mob in mobs)
 	{
