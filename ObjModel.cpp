@@ -184,7 +184,7 @@ void ObjModel::createRigidBody(const btVector3 &size, btScalar mass)
 
 	rigidBody->setAngularFactor(btVector3(0.0, 1.0, 0.0));
 
-	rigidBody->setRestitution(1.5);
+	rigidBody->setRestitution(1.75);
 }
 
 ObjModel::ObjModel(std::string fileName, const btVector3 &size, btScalar mass)

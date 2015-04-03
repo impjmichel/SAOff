@@ -106,9 +106,9 @@ void Mob::update()
 	//Set X and Z velocity, keep Y the same.
 	btVector3 vec = pObjModel->rigidBody->getLinearVelocity();
 	float yValue = vec.y();
-	vec.setX(((vec.x() * 2.) + (xVel * 1.)) / 3.);//TODO: Did vec.x() and average for fun, seem pretty good; check.
+	vec.setX(((vec.x() * 2.) + (xVel * 1.)) / 3.);//TODO: Did vec.x() and average for fun, seems pretty good; check.
 	vec.setY(yValue);
-	vec.setZ(((vec.z() * 2.) + (zVel * 1.)) / 3.);//TODO: Did vec.z() and average for fun, seem pretty good; check.
+	vec.setZ(((vec.z() * 2.) + (zVel * 1.)) / 3.);//TODO: Did vec.z() and average for fun, seems pretty good; check.
 	vec.normalize();
 	vec *= speed;
 	pObjModel->rigidBody->setLinearVelocity(vec);
