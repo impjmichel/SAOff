@@ -161,29 +161,9 @@ glm::vec4 calcTangentVector(
 }
 
 
-void ObjModel::createRigidBody()
+void ObjModel::createRigidBody(const btVector3 &size, btScalar mass)
 {
-	//btTriangleMesh *tMesh = new btTriangleMesh();
-
-	//for (unsigned long int i = 0; i < finalVertices.size(); i += 12)
-	//{
-	//	glm::vec3 t01 = ((glm::vec3)finalVertices[i + 0]);
-	//	btVector3 t1 = btVector3(t01.x, t01.y, t01.z);
-
-	//	glm::vec3 t02 = ((glm::vec3)finalVertices[i + 1]);
-	//	btVector3 t2 = btVector3(t02.x, t02.y, t02.z);
-
-	//	glm::vec3 t03 = ((glm::vec3)finalVertices[i + 2]);
-	//	btVector3 t3 = btVector3(t03.x, t03.y, t03.z);
-
-	//	tMesh->addTriangle(t1, t2, t3);
-	//}
-
-	//groundShape = new btBvhTriangleMeshShape(tMesh, true);
-
-	groundShape = new btBoxShape(btVector3(0.2, 0.45, 1.0));
-
-	btScalar mass = 10.0; //rigidbody is static if mass is zero, otherwise dynamic
+	groundShape = new btBoxShape(size);
 	btVector3 localInertia(0, 0, 0);
 
 	groundShape->calculateLocalInertia(mass, localInertia);
@@ -207,7 +187,7 @@ void ObjModel::createRigidBody()
 	rigidBody->setRestitution(1.75);
 }
 
-ObjModel::ObjModel(std::string fileName)
+ObjModel::ObjModel(std::string fileName, const btVector3 &size, btScalar mass)
 {
 	//If allready in buffer, load that instead.
 	objModelCore = buffer[fileName];
@@ -218,7 +198,7 @@ ObjModel::ObjModel(std::string fileName)
 	}
 	else
 	{
-		createRigidBody();
+		createRigidBody(size, mass);
 		return;
 	}
 
@@ -414,7 +394,7 @@ ObjModel::ObjModel(std::string fileName)
         
     glBindVertexArray(0);
 
-	createRigidBody();
+	createRigidBody(size, mass);
 }
 
 ObjModel::~ObjModel(void)

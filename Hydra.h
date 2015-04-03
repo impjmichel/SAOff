@@ -29,7 +29,9 @@ private:
 	glm::vec4 hydraLeftPositionVector;
 	glm::vec4 hydraLeftOrientation;
 	bool hydraEnabled = false;
+	bool initRigidbodies = false;
 
+	glm::mat4 getWorldMatrixFromHydra(glm::mat4 old);
 	void initHydraModels();
 };
 
