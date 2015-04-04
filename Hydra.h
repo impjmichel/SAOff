@@ -1,6 +1,9 @@
 #ifndef HYDRA_H
 #define HYDRA_H
 
+#define SWORD_Y_OFFSET -1.0
+#define TO_RADIANS(X) X / 180. * PI
+
 #include <glm\glm.hpp>
 #include <VrLib/Device.h>
 

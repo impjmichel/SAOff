@@ -31,7 +31,7 @@ void CameraCharacter::draw()
 
 void CameraCharacter::init()
 {
-	groundShape = new btBoxShape(btVector3(0.4, HEIGHT_OFFSET * 2., 0.4));
+	groundShape = new btBoxShape(btVector3(0.4, 0.4, 0.4));
 
 	btScalar mass =	0.0; //rigidbody is static if mass is zero, otherwise dynamic
 	btVector3 localInertia(0, 0, 0);

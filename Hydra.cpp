@@ -10,6 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "GameManager.h"
 #include "Level.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 void Hydra::init()
 {
@@ -37,21 +38,25 @@ void Hydra::draw(float InitialModelView[16])
 	btScalar m[16];
 	btTransform trans;
 
-	//Right Hydra
 	//NOTE: This part is currently very dependend of the direction the hydra-globe is pointing, be sure to make the razer logo point towards you.
 	//Hydra draw
+
+	//Right Hydra
 	{
 		glUseProgram(shaderID);
 		glPushMatrix();
 		glLoadMatrixf(InitialModelView);
 		rightModel->rigidBody->getMotionState()->getWorldTransform(trans);
 		trans.getOpenGLMatrix(m);
-		glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 1, -2);// hydraRightPositionVector[2]);
+		glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 1., -2. + hydraRightPositionVector[2]);
 
 		glm::mat4 old = hydraRightPosition.getData();
 
 		glMultMatrixf(glm::value_ptr(getWorldMatrixFromHydra(old)));
 		glRotatef(180, 0, 0, 1);
+
+		glTranslatef(0, SWORD_Y_OFFSET, 0);
+
 		glScalef(0.0018, 0.0018, 0.0018);
 
 		rightModel->draw(shaderID);
@@ -59,22 +64,23 @@ void Hydra::draw(float InitialModelView[16])
 		glPopMatrix();
 		glUseProgram(0);
 	}
-	//End of hydra draw
 
 	//Left Hydra
-	//Hydra draw
 	{
 		glUseProgram(shaderID);
 		glPushMatrix();
 		glLoadMatrixf(InitialModelView);
 		leftModel->rigidBody->getMotionState()->getWorldTransform(trans);
 		trans.getOpenGLMatrix(m);
-		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1, -2);// hydraLeftPositionVector[2]);
+		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1., -2.+ hydraLeftPositionVector[2]);
 
 		glm::mat4 old = hydraLeftPosition.getData();
 
 		glMultMatrixf(glm::value_ptr(getWorldMatrixFromHydra(old)));
 		glRotatef(180, 0, 0, 1);
+
+		glTranslatef(0, SWORD_Y_OFFSET, 0);
+
 		glScalef(0.0018, 0.0018, 0.0018);
 
 		leftModel->draw(shaderID);
@@ -121,13 +127,26 @@ void Hydra::update()
 		rightModel->rigidBody->setActivationState(1);
 
 		btTransform transform = rightModel->rigidBody->getCenterOfMassTransform();
-		transform.setOrigin(btVector3(hydraRightPositionVector.x, hydraRightPositionVector.y, hydraRightPositionVector.z));
+		float cameraYAngle = TO_RADIANS(-fpXAngle);
+		float cameraXAngle = TO_RADIANS(-fpYAngle);
 
-		auto v = glm::quat_cast(getWorldMatrixFromHydra(hydraRightPosition.getData()));
+		glm::mat4 tra;
+		tra = glm::translate(tra, glm::vec3(fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate));
+		tra = glm::rotate(tra, -cameraYAngle, glm::vec3(0, 1, 0));
+		tra = glm::rotate(tra, -cameraXAngle, glm::vec3(1, 0, 0));
+		tra = glm::translate(tra, glm::vec3(hydraRightPositionVector.x * 2., hydraRightPositionVector.y * 2. - 1., hydraRightPositionVector.z * 2. - 2.));
+		glm::vec4 tran = tra * glm::vec4(0., 0., 0., 1.);
+		transform.setOrigin(btVector3(tran.x, tran.y, tran.z));
 
+		auto v = glm::quat_cast((hydraRightPosition.getData()));
 		btQuaternion quat(v.x, v.y, v.z, v.w);
 		transform.setRotation(quat);
+
 		rightModel->rigidBody->setCenterOfMassTransform(transform);
+
+		btTransform tr = rightModel->rigidBody->getWorldTransform();
+		tr.setRotation(btQuaternion(-cameraYAngle, -cameraXAngle, 0) * tr.getRotation());
+		rightModel->rigidBody->setWorldTransform(tr);
 	}
 	if (hydraLeftJoystick.isInitialized())
 	{
@@ -154,13 +173,26 @@ void Hydra::update()
 		leftModel->rigidBody->setActivationState(1);
 
 		btTransform transform = leftModel->rigidBody->getCenterOfMassTransform();
-		transform.setOrigin(btVector3(hydraLeftPositionVector.x, hydraLeftPositionVector.y, hydraLeftPositionVector.z));
+		float cameraYAngle = TO_RADIANS(-fpXAngle);
+		float cameraXAngle = TO_RADIANS(-fpYAngle);
 
-		auto v = glm::quat_cast(getWorldMatrixFromHydra(hydraLeftPosition.getData()));
+		glm::mat4 tra;
+		tra = glm::translate(tra, glm::vec3(fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate));
+		tra = glm::rotate(tra, -cameraYAngle, glm::vec3(0, 1, 0));
+		tra = glm::rotate(tra, -cameraXAngle, glm::vec3(1, 0, 0));
+		tra = glm::translate(tra, glm::vec3(hydraLeftPositionVector.x * 2., hydraLeftPositionVector.y * 2. - 1., hydraLeftPositionVector.z * 2. - 2.));
+		glm::vec4 tran = tra * glm::vec4(0., 0., 0., 1.);
+		transform.setOrigin(btVector3(tran.x, tran.y, tran.z));
 
+		auto v = glm::quat_cast((hydraLeftPosition.getData()));
 		btQuaternion quat(v.x, v.y, v.z, v.w);
 		transform.setRotation(quat);
+
 		leftModel->rigidBody->setCenterOfMassTransform(transform);
+
+		btTransform tr = leftModel->rigidBody->getWorldTransform();
+		tr.setRotation(btQuaternion(-cameraYAngle, -cameraXAngle, 0) * tr.getRotation());
+		leftModel->rigidBody->setWorldTransform(tr);
 	}
 	if (hydraLeftBumper.isInitialized())
 	{
@@ -176,10 +208,9 @@ void Hydra::update()
 
 void Hydra::initHydraModels()
 {
-	btVector3 size = btVector3(0.1, 0.5, 2.0);
+	btVector3 size = btVector3(0.1, 0.1, 0.85);
 	btScalar mass = 0;
 	rightModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword01\\rusword.obj", size, mass);
-	
 	leftModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword02\\rusword.obj", size, mass);
 }
 

@@ -1,7 +1,9 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-//#define BULLET_DEBUG_DRAW
+#ifdef _DEBUG
+#define BULLET_DEBUG_DRAW
+#endif
 
 #include <vector>
 #include <VrLib\Device.h>

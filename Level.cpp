@@ -144,7 +144,7 @@ Level::Level()
 	}
 
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 0; i++)
 		{
 			Mob *mob = new Mob();
 			mob->init();
