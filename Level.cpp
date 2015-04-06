@@ -19,19 +19,35 @@
 #include "debug.h"
 #include "CameraCharacter.h"
 #include "Main.h"
+#include <time.h>
+
+HydraCollisionInformation leftHydraCollisionInformaton;
+HydraCollisionInformation rightHydraCollisionInformaton;
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 {
-	//if (((btRigidBody*)body0)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
-	//{
-	//	btVector3 velocity = ((btRigidBody*)body1)->getLinearVelocity();
-	//	((btRigidBody*)body1)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
-	//}
-	//else if (((btRigidBody*)body1)->getUserPointer() == (GameManager::getInstance()->level->terrainBody))
-	//{
-	//	btVector3 velocity = ((btRigidBody*)body0)->getLinearVelocity();
-	//	((btRigidBody*)body0)->setLinearVelocity(btVector3((-velocity.x()) * 3., velocity.y(), (-velocity.z()) * 3.));
-	//}
+	btRigidBody *rBody0 = (btRigidBody*)body0;
+	btRigidBody *rBody1 = (btRigidBody*)body1;
+
+	if (!GameManager::getInstance()->level->hydra->initRigidbodies)
+		return false;
+
+	//check if mob
+	if (rBody0->getUserPointer() == GameManager::getInstance()->level->hydra->leftModel || rBody1->getUserPointer() == GameManager::getInstance()->level->hydra->leftModel)
+	{
+		switch (leftHydraCollisionInformaton.m_state)
+		{
+		case HydraCollisionState::NO_COLLISION:
+			leftHydraCollisionInformaton = HydraCollisionInformation(HydraCollisionState::JUST_GOT_COLLISION, (long)time(NULL));
+			GameManager::getInstance()->level->health -= 5;
+			//Check health < 0;
+			break;
+
+		case HydraCollisionState::JUST_GOT_COLLISION:
+			leftHydraCollisionInformaton = HydraCollisionInformation(HydraCollisionState::NO_COLLISION, (long)time(NULL));
+			break;
+		}
+	}
 
 	return false;
 }
@@ -144,7 +160,7 @@ Level::Level()
 	}
 
 	{
-		for (int i = 0; i < 0; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			Mob *mob = new Mob();
 			mob->init();
@@ -360,21 +376,21 @@ void Level::draw(DrawMode drawMode)
 		glBegin(GL_QUADS);
 
 		//Under
-		glVertex2f(-1, -1);
-		glVertex2f(1, -1);
-		glVertex2f(1, -0.8);
-		glVertex2f(-1, -0.8);
+		glVertex2f(-1., -1.);
+		glVertex2f(1., -1.);
+		glVertex2f(1., -0.8);
+		glVertex2f(-1., -0.8);
 
 		//Upper
-		glVertex2f(-1, 1);
-		glVertex2f(1, 1);
-		glVertex2f(1, 0.8);
-		glVertex2f(-1, 0.8);
+		glVertex2f(-1., 1.);
+		glVertex2f(1., 1.);
+		glVertex2f(1., 0.8);
+		glVertex2f(-1., 0.8);
 
 		//Left
 		glVertex2f(-0.8, -0.8);
-		glVertex2f(-1, -0.8);
-		glVertex2f(-1, 0.8);
+		glVertex2f(-1., -0.8);
+		glVertex2f(-1., 0.8);
 		glVertex2f(-0.8, 0.8);
 		glEnd();
 	}
@@ -384,21 +400,21 @@ void Level::draw(DrawMode drawMode)
 		glBegin(GL_QUADS);
 
 		//Under
-		glVertex2f(-1, -1);
-		glVertex2f(1, -1);
-		glVertex2f(1, -0.8);
-		glVertex2f(-1, -0.8);
+		glVertex2f(-1., -1.);
+		glVertex2f(1., -1.);
+		glVertex2f(1., -0.8);
+		glVertex2f(-1., -0.8);
 
 		//Upper
-		glVertex2f(-1, 1);
-		glVertex2f(1, 1);
-		glVertex2f(1, 0.8);
-		glVertex2f(-1, 0.8);
+		glVertex2f(-1., 1.);
+		glVertex2f(1., 1.);
+		glVertex2f(1., 0.8);
+		glVertex2f(-1., 0.8);
 
 		//Right
 		glVertex2f(0.8, -0.8);
-		glVertex2f(1, -0.8);
-		glVertex2f(1, 0.8);
+		glVertex2f(1., -0.8);
+		glVertex2f(1., 0.8);
 		glVertex2f(0.8, 0.8);
 		glEnd();
 	}
@@ -409,27 +425,27 @@ void Level::draw(DrawMode drawMode)
 		glBegin(GL_QUADS);
 
 		//Under
-		glVertex2f(-1, -1);
-		glVertex2f(1, -1);
-		glVertex2f(1, -0.8);
-		glVertex2f(-1, -0.8);
+		glVertex2f(-1., -1.);
+		glVertex2f(1., -1.);
+		glVertex2f(1., -0.8);
+		glVertex2f(-1., -0.8);
 
 		//Upper
-		glVertex2f(-1, 1);
-		glVertex2f(1, 1);
-		glVertex2f(1, 0.8);
-		glVertex2f(-1, 0.8);
+		glVertex2f(-1., 1.);
+		glVertex2f(1., 1.);
+		glVertex2f(1., 0.8);
+		glVertex2f(-1., 0.8);
 
 		//Right
 		glVertex2f(0.8, -0.8);
-		glVertex2f(1, -0.8);
-		glVertex2f(1, 0.8);
+		glVertex2f(1., -0.8);
+		glVertex2f(1., 0.8);
 		glVertex2f(0.8, 0.8);
 
 		//Left
 		glVertex2f(-0.8, -0.8);
-		glVertex2f(-1, -0.8);
-		glVertex2f(-1, 0.8);
+		glVertex2f(-1., -0.8);
+		glVertex2f(-1., 0.8);
 		glVertex2f(-0.8, 0.8);
 		glEnd();
 #ifndef SIMULATION_MODE

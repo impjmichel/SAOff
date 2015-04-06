@@ -405,6 +405,7 @@ void ObjModel::draw(unsigned int shaderID)
 {
 	glBindVertexArray(objModelCore->_vertexArray);
 	glBindAttribLocation(shaderID, 0, "InVertex");
+	glBindAttribLocation(shaderID, 1, "InNormal");
 	glBindAttribLocation(shaderID, 2, "InTexCoord0");
 	GLint loc = glGetUniformLocation(shaderID, "texture");
 

@@ -24,6 +24,25 @@ class btRigidBody;
 class Hydra;
 class CameraCharacter;
 
+enum HydraCollisionState
+{
+	NO_COLLISION,
+	COLLISION,
+	JUST_GOT_COLLISION,
+	JUST_LOST_COLLISION
+};
+
+struct HydraCollisionInformation
+{
+	HydraCollisionInformation(HydraCollisionState state, long collisionTime) : m_state(state), m_collisionTime(collisionTime){}
+	HydraCollisionInformation(){}
+	HydraCollisionState m_state = HydraCollisionState::NO_COLLISION;
+	long m_collisionTime = LONG_MAX;
+};
+
+extern HydraCollisionInformation leftHydraCollisionInformaton;
+extern HydraCollisionInformation rightHydraCollisionInformaton;
+
 enum DrawMode
 {
 	RightEye,

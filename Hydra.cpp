@@ -14,7 +14,7 @@
 
 void Hydra::init()
 {
-	shaderID = initShader("simple");
+	shaderID = initShader("lightingShader");
 
 	hydraRightPosition.init("RightNunchuck");
 	hydraLeftPosition.init("LeftNunchuck");
@@ -38,12 +38,38 @@ void Hydra::draw(float InitialModelView[16])
 	btScalar m[16];
 	btTransform trans;
 
+	glUseProgram(shaderID);
+	//set the shader uniforms
+	GLint uniform = 0;
+	GLfloat projMatrix[16];
+	GLfloat modelViewMatrix[16];
+
+	uniform = glGetUniformLocation(shaderID, "materialShininess");
+	glUniform1f(uniform, 80.0);
+
+	uniform = glGetUniformLocation(shaderID, "materialSpecularColor");
+	glUniform3f(uniform, 0.5, 0.3, 0.1); // dunno, random something something
+
+	uniform = glGetUniformLocation(shaderID, "light.position");
+	glUniform3f(uniform, 0, 1, 0); // somewhere
+
+	uniform = glGetUniformLocation(shaderID, "light.intensities");
+	glUniform3f(uniform, 1, 1, 1); // white
+
+	uniform = glGetUniformLocation(shaderID, "light.attenuation");
+	glUniform1f(uniform, 0.2);
+
+	uniform = glGetUniformLocation(shaderID, "light.ambientCoefficient");
+	glUniform1f(uniform, 0.005);
+
+	uniform = glGetUniformLocation(shaderID, "cameraPosition");
+	glUniform3f(uniform, fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate);
+
 	//NOTE: This part is currently very dependend of the direction the hydra-globe is pointing, be sure to make the razer logo point towards you.
 	//Hydra draw
 
 	//Right Hydra
 	{
-		glUseProgram(shaderID);
 		glPushMatrix();
 		glLoadMatrixf(InitialModelView);
 		rightModel->rigidBody->getMotionState()->getWorldTransform(trans);
@@ -59,20 +85,26 @@ void Hydra::draw(float InitialModelView[16])
 
 		glScalef(0.0018, 0.0018, 0.0018);
 
+
+		uniform = glGetUniformLocation(shaderID, "projection");
+		glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
+		glUniformMatrix4fv(uniform, 1, GL_FALSE, projMatrix);
+
+		uniform = glGetUniformLocation(shaderID, "modelView");
+		glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
+		glUniformMatrix4fv(uniform, 1, GL_FALSE, modelViewMatrix);
 		rightModel->draw(shaderID);
 
 		glPopMatrix();
-		glUseProgram(0);
 	}
 
 	//Left Hydra
 	{
-		glUseProgram(shaderID);
 		glPushMatrix();
 		glLoadMatrixf(InitialModelView);
 		leftModel->rigidBody->getMotionState()->getWorldTransform(trans);
 		trans.getOpenGLMatrix(m);
-		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1., -2.+ hydraLeftPositionVector[2]);
+		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1., -2. + hydraLeftPositionVector[2]);
 
 		glm::mat4 old = hydraLeftPosition.getData();
 
@@ -83,11 +115,19 @@ void Hydra::draw(float InitialModelView[16])
 
 		glScalef(0.0018, 0.0018, 0.0018);
 
+
+		uniform = glGetUniformLocation(shaderID, "projection");
+		glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
+		glUniformMatrix4fv(uniform, 1, GL_FALSE, projMatrix);
+
+		uniform = glGetUniformLocation(shaderID, "modelView");
+		glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
+		glUniformMatrix4fv(uniform, 1, GL_FALSE, modelViewMatrix);
 		leftModel->draw(shaderID);
 
 		glPopMatrix();
-		glUseProgram(0);
 	}
+	glUseProgram(0);
 	//End of hydra draw
 
 	glPopMatrix();
