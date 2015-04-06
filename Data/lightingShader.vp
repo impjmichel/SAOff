@@ -1,4 +1,4 @@
-#version 410 compatibility
+#version 410
 
 uniform mat4 projection;
 uniform mat4 modelView;
