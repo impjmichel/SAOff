@@ -180,6 +180,12 @@
     <None Include="Data\simple.vp">
       <Filter>Data</Filter>
     </None>
+    <None Include="Data\lightingShader.fp">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="Data\lightingShader.vp">
+      <Filter>Data</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Data\grass4.png">

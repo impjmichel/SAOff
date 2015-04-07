@@ -52,14 +52,13 @@ bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 	if (!found) return false;
 
 	GLint64 timer;
-	glGetInteger64v(GL_TIMESTAMP, &timer);
-	timer /= 10000000.0f;
-
 	if (rBody0->getUserPointer() == GameManager::getInstance()->level->hydra->leftModel || rBody1->getUserPointer() == GameManager::getInstance()->level->hydra->leftModel)
 	{
 		switch (leftHydraCollisionInformation.m_state)
 		{
 		case CollisionState::NO_COLLISION:
+			glGetInteger64v(GL_TIMESTAMP, &timer);
+			timer /= 10000000.0f;
 			leftHydraCollisionInformation = CollisionInformation(CollisionState::COLLISION, timer, foundMob);
 			break;
 		}
@@ -70,6 +69,8 @@ bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 		switch (rightHydraCollisionInformation.m_state)
 		{
 		case CollisionState::NO_COLLISION:
+			glGetInteger64v(GL_TIMESTAMP, &timer);
+			timer /= 10000000.0f;
 			rightHydraCollisionInformation = CollisionInformation(CollisionState::COLLISION, timer, foundMob);
 			break;
 		}
@@ -77,6 +78,8 @@ bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 
 	if (rBody0->getUserPointer() == GameManager::getInstance()->level->cameraCharacter || rBody1->getUserPointer() == GameManager::getInstance()->level->cameraCharacter)
 	{
+		glGetInteger64v(GL_TIMESTAMP, &timer);
+		timer /= 10000000.0f;
 		if (foundMob->lastHitPlayer + 50 <= timer)
 		{
 			GameManager::getInstance()->level->health -= 10;
@@ -94,7 +97,7 @@ Level::Level()
 	// temporary stuff ( Terrain generator )
 	g_Terrain = new Terrain(1,1);
 	g_Terrain->init_FlatGrassLand();
-	if (!g_Terrain->LoadHeightmap(129, 129))
+	if (!g_Terrain->LoadHeightmap(65, 65))
 	{
 		std::cerr << "Failed to load heightmap for terrain!" << std::endl;
 	}
@@ -329,7 +332,7 @@ void Level::update()
 
 	cameraCharacter->update();
 
-	srand(time(NULL));
+	//srand(time(NULL));
 
 	//if ((cubeList.size() < 0))
 	//{

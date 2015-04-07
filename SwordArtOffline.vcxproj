@@ -66,6 +66,8 @@
   <ItemGroup>
     <None Include="Data\gaussianblur.fp" />
     <None Include="Data\gaussianblur.vp" />
+    <None Include="Data\lightingShader.fp" />
+    <None Include="Data\lightingShader.vp" />
     <None Include="Data\simple.fp" />
     <None Include="Data\simple.vp" />
   </ItemGroup>
