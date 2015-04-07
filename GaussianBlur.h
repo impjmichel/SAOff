@@ -9,8 +9,9 @@ public:
 	GLuint framebufferID = 0;
 	GLuint colorTextureID[2];
 	GLuint depthRenderBufferID = 0;
+	bool bloom = false;
 
-	GaussianBlur();
+	GaussianBlur(bool bloom);
 	void init();
 	void initFBO(int width, int height, int oldFbo);
 	void draw();

@@ -1,7 +1,7 @@
 #ifndef MY_APPLICATION_H
 #define MY_APPLICATION_H
 
-#define GLOBAL_UPDATE_RATE 1. / 30.
+#define GLOBAL_UPDATE_RATE 1.0f / 30.0f
 
 #include <VrLib\Application.h>
 

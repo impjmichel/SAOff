@@ -1,10 +1,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#define PI 3.14159265358979323846
-#define CAMERA_SPEED 0.25
-#define CAMERA_ROTATION_SPEED 2.0
-#define DISTANCE_OF_HEAD_FROM_FLOOR 15.0
+#define PI 3.14159265358979323846f
+#define CAMERA_SPEED 0.25f
+#define CAMERA_ROTATION_SPEED 2.0f
+#define DISTANCE_OF_HEAD_FROM_FLOOR 15.0f
 
 extern void InitCameraRotation();
 extern void InitCameraTranslation();

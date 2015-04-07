@@ -32,7 +32,7 @@ void GameManager::draw(const glm::mat4 &projectionMatrix, const glm::mat4 &model
 void GameManager::preFrame(double frameTime, double totalTime)
 {
 	fpTime += frameTime;
-	fpTimeUntillUpdate -= (frameTime / 1000.);
+	fpTimeUntillUpdate -= (frameTime / 1000.0f);
 
 	if (fpTimeUntillUpdate <= 0) {
 		level->update(frameTime, totalTime);

@@ -2,8 +2,10 @@
 uniform sampler2D texture;
 uniform bool firstPass;
 //const float timeLimiter = 50.;
-const float range = 150.;
-const int samples = 9;
+const float range = 10.;
+const int samples = 24;
+
+uniform bool bloom;
 
 void main()
 {
@@ -32,5 +34,12 @@ void main()
 		sum += (texture2D(texture, gl_TexCoord[0].st) * float(samples * 2));										   
 	}
 
-	gl_FragColor = vec4((sum / float(samples * 4)).stp, 1.0);
+	if(bloom)
+	{
+		gl_FragColor = vec4((sum / float(samples * 4)).stp + ((texture2D(texture, gl_TexCoord[0].st).stp) / 2.), 0.85);
+	}
+	else
+	{
+		gl_FragColor = vec4((sum / float(samples * 4)).stp, 1.0);
+	}
 }

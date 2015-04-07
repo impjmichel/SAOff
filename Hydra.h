@@ -1,8 +1,8 @@
 #ifndef HYDRA_H
 #define HYDRA_H
 
-#define SWORD_Y_OFFSET -1.0 //Used in order to align the hitbox and the drawn model.
-#define TO_RADIANS(X) X / 180. * PI
+#define SWORD_Y_OFFSET -1.0f //Used in order to align the hitbox and the drawn model.
+#define TO_RADIANS(X) float(X / 180.0f * 3.14159265358979323846f)
 
 #include <glm\glm.hpp>
 #include <VrLib/Device.h>

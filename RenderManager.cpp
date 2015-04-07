@@ -14,7 +14,7 @@ RenderManager::RenderManager()
 	//glEnable(GL_CULL_FACE); //Ouchta set normals for this.
 	//glCullFace(GL_BACK);
 	glClearColor(0, 0, 0, 0);
-	postProcessor = new GaussianBlur();
+	postProcessor = new GaussianBlur(true);
 	postProcessor->init();
 }
 

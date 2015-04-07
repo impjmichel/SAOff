@@ -14,7 +14,7 @@ void StaticEnvironment::init()
 	shaderID = initShader("simple");
 	btVector3 size(0.2, 0.45, 1.0);
 	btScalar mass = 10.0;
-	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf3\\Wolf.obj", size, mass);
+	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf3\\Wolf.obj", size, mass, btVector3(0, 0, 0));
 }
 
 void StaticEnvironment::draw()

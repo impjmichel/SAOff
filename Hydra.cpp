@@ -45,22 +45,22 @@ void Hydra::draw(float InitialModelView[16])
 	GLfloat modelViewMatrix[16];
 
 	uniform = glGetUniformLocation(shaderID, "materialShininess");
-	glUniform1f(uniform, 80.0);
+	glUniform1f(uniform, 80.0f);
 
 	uniform = glGetUniformLocation(shaderID, "materialSpecularColor");
-	glUniform3f(uniform, 0.5, 0.3, 0.1); // dunno, random something something
+	glUniform3f(uniform, 0.5f, 0.3f, 0.1f); // dunno, random something something
 
 	uniform = glGetUniformLocation(shaderID, "light.position");
-	glUniform3f(uniform, 0, 1, 0); // somewhere
+	glUniform3f(uniform, 0.0f, 1.0f, 0.0f); // somewhere
 
 	uniform = glGetUniformLocation(shaderID, "light.intensities");
-	glUniform3f(uniform, 1, 1, 1); // white
+	glUniform3f(uniform, 1.0f, 1.0f, 1.0f); // white
 
 	uniform = glGetUniformLocation(shaderID, "light.attenuation");
-	glUniform1f(uniform, 0.2);
+	glUniform1f(uniform, 0.2f);
 
 	uniform = glGetUniformLocation(shaderID, "light.ambientCoefficient");
-	glUniform1f(uniform, 0.005);
+	glUniform1f(uniform, 0.005f);
 
 	uniform = glGetUniformLocation(shaderID, "cameraPosition");
 	glUniform3f(uniform, fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate);
@@ -74,16 +74,16 @@ void Hydra::draw(float InitialModelView[16])
 		glLoadMatrixf(InitialModelView);
 		rightModel->rigidBody->getMotionState()->getWorldTransform(trans);
 		trans.getOpenGLMatrix(m);
-		glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 1., -2. + hydraRightPositionVector[2]);
+		glTranslatef(hydraRightPositionVector[0], hydraRightPositionVector[1] - 1.0f, -2.0f + hydraRightPositionVector[2]);
 
 		glm::mat4 old = hydraRightPosition.getData();
 
 		glMultMatrixf(glm::value_ptr(getWorldMatrixFromHydra(old)));
-		glRotatef(180, 0, 0, 1);
+		glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
 
-		glTranslatef(0, SWORD_Y_OFFSET, 0);
+		glTranslatef(0.0f, SWORD_Y_OFFSET, 0.0f);
 
-		glScalef(0.0018, 0.0018, 0.0018);
+		glScalef(0.0018f, 0.0018f, 0.0018f);
 
 
 		uniform = glGetUniformLocation(shaderID, "projection");
@@ -104,25 +104,25 @@ void Hydra::draw(float InitialModelView[16])
 		glLoadMatrixf(InitialModelView);
 		leftModel->rigidBody->getMotionState()->getWorldTransform(trans);
 		trans.getOpenGLMatrix(m);
-		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1., -2. + hydraLeftPositionVector[2]);
+		glTranslatef(hydraLeftPositionVector[0], hydraLeftPositionVector[1] - 1.0f, -2.0f + hydraLeftPositionVector[2]);
 
 		glm::mat4 old = hydraLeftPosition.getData();
 
 		glMultMatrixf(glm::value_ptr(getWorldMatrixFromHydra(old)));
-		glRotatef(180, 0, 0, 1);
+		glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
 
-		glTranslatef(0, SWORD_Y_OFFSET, 0);
+		glTranslatef(0.0f, SWORD_Y_OFFSET, 0.0f);
 
-		glScalef(0.0018, 0.0018, 0.0018);
+		glScalef(0.0018f, 0.0018f, 0.0018f);
 
 
 		uniform = glGetUniformLocation(shaderID, "projection");
 		glGetFloatv(GL_PROJECTION_MATRIX, projMatrix);
-		glUniformMatrix4fv(uniform, 1, GL_FALSE, projMatrix);
+		glUniformMatrix4fv(uniform, 1.0f, GL_FALSE, projMatrix);
 
 		uniform = glGetUniformLocation(shaderID, "modelView");
 		glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
-		glUniformMatrix4fv(uniform, 1, GL_FALSE, modelViewMatrix);
+		glUniformMatrix4fv(uniform, 1.0f, GL_FALSE, modelViewMatrix);
 		leftModel->draw(shaderID);
 
 		glPopMatrix();
@@ -137,7 +137,7 @@ void Hydra::update()
 {
 	if (hydraRightJoystick.isInitialized())
 	{
-		if (!initRigidbodies)
+		if ((!initRigidbodies) && hydraEnabled)
 		{
 			GameManager::getInstance()->level->world->addRigidBody(rightModel->rigidBody);
 			GameManager::getInstance()->level->world->addRigidBody(leftModel->rigidBody);
@@ -145,21 +145,21 @@ void Hydra::update()
 		}
 
 		glm::mat4 hydraMatrix = hydraRightPosition.getData();
-		hydraRightPositionVector = hydraMatrix * glm::vec4(0, 0, 0, 1);
-		hydraRightOrientation = glm::normalize((hydraMatrix * glm::vec4(0, 0, -1, 1)) - hydraRightPositionVector);
+		hydraRightPositionVector = hydraMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		hydraRightOrientation = glm::normalize((hydraMatrix * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f)) - hydraRightPositionVector);
 
 		glm::vec2 joystickData = hydraRightJoystick.getData();
 		if (!((joystickData[0] <= -900) && (joystickData[1] <= -900)))
 		{
 			hydraEnabled = true;
-			if (joystickData[0] - 0.1 > 0)
+			if (joystickData[0] - 0.1f > 0.0f)
 				RotateRight();
-			else if (joystickData[0] + 0.1 < 0)
+			else if (joystickData[0] + 0.1f < 0.0f)
 				RotateLeft();
 
-			if (joystickData[1] - 0.1 > 0)
+			if (joystickData[1] - 0.1f > 0.0f)
 				RotateUp();
-			else if (joystickData[1] + 0.1 < 0)
+			else if (joystickData[1] + 0.1f < 0.0f)
 				RotateDown();
 		}
 
@@ -172,10 +172,10 @@ void Hydra::update()
 
 		glm::mat4 tra;
 		tra = glm::translate(tra, glm::vec3(fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate));
-		tra = glm::rotate(tra, -cameraYAngle, glm::vec3(0, 1, 0));
-		tra = glm::rotate(tra, -cameraXAngle, glm::vec3(1, 0, 0));
-		tra = glm::translate(tra, glm::vec3(hydraRightPositionVector.x * 2., hydraRightPositionVector.y * 2. - 1., hydraRightPositionVector.z * 2. - 2.));
-		glm::vec4 tran = tra * glm::vec4(0., 0., 0., 1.);
+		tra = glm::rotate(tra, -cameraYAngle, glm::vec3(0.0f, 1.0f, 0.0f));
+		tra = glm::rotate(tra, -cameraXAngle, glm::vec3(1.0f, 0.0f, 0.0f));
+		tra = glm::translate(tra, glm::vec3(hydraRightPositionVector.x * 2., hydraRightPositionVector.y * 2.0f - 1.0f, hydraRightPositionVector.z * 2.0f - 2.0f));
+		glm::vec4 tran = tra * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		transform.setOrigin(btVector3(tran.x, tran.y, tran.z));
 
 		auto v = glm::quat_cast((hydraRightPosition.getData()));
@@ -185,27 +185,27 @@ void Hydra::update()
 		rightModel->rigidBody->setCenterOfMassTransform(transform);
 
 		btTransform tr = rightModel->rigidBody->getWorldTransform();
-		tr.setRotation(btQuaternion(-cameraYAngle, -cameraXAngle, 0) * tr.getRotation());
+		tr.setRotation(btQuaternion(-cameraYAngle, -cameraXAngle, 0.0f) * tr.getRotation());
 		rightModel->rigidBody->setWorldTransform(tr);
 	}
 	if (hydraLeftJoystick.isInitialized())
 	{
 		glm::mat4 hydraMatrix = hydraLeftPosition.getData();
-		hydraLeftPositionVector = hydraMatrix * glm::vec4(0, 0, 0, 1);
-		hydraLeftOrientation = glm::normalize((hydraMatrix * glm::vec4(0, 0, -1, 1)) - hydraLeftPositionVector);
+		hydraLeftPositionVector = hydraMatrix * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		hydraLeftOrientation = glm::normalize((hydraMatrix * glm::vec4(0.0f, 0.0f, -1.0f, 1.0f)) - hydraLeftPositionVector);
 
 		glm::vec2 joystickData = hydraLeftJoystick.getData();
 		if (!((joystickData[0] <= -900) && (joystickData[1] <= -900)))
 		{
 			hydraEnabled = true;
-			if (joystickData[0] - 0.1 > 0)
+			if (joystickData[0] - 0.1f > 0.0f)
 				MoveRight();
-			else if (joystickData[0] + 0.1 < 0)
+			else if (joystickData[0] + 0.1f < 0.0f)
 				MoveLeft();
 
-			if (joystickData[1] - 0.1 > 0)
+			if (joystickData[1] - 0.1f > 0.0f)
 				MoveForward();
-			else if (joystickData[1] + 0.1 < 0)
+			else if (joystickData[1] + 0.1f < 0.0f)
 				MoveBackward();
 		}
 
@@ -218,10 +218,10 @@ void Hydra::update()
 
 		glm::mat4 tra;
 		tra = glm::translate(tra, glm::vec3(fpCameraXCoordinate, fpCameraYCoordinate, fpCameraZCoordinate));
-		tra = glm::rotate(tra, -cameraYAngle, glm::vec3(0, 1, 0));
+		tra = glm::rotate(tra, -cameraYAngle, glm::vec3(0.0f, 1.0f, 0.0f));
 		tra = glm::rotate(tra, -cameraXAngle, glm::vec3(1, 0, 0));
-		tra = glm::translate(tra, glm::vec3(hydraLeftPositionVector.x * 2., hydraLeftPositionVector.y * 2. - 1., hydraLeftPositionVector.z * 2. - 2.));
-		glm::vec4 tran = tra * glm::vec4(0., 0., 0., 1.);
+		tra = glm::translate(tra, glm::vec3(hydraLeftPositionVector.x * 2.0f, hydraLeftPositionVector.y * 2.0f - 1.0f, hydraLeftPositionVector.z * 2.0f - 2.0f));
+		glm::vec4 tran = tra * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		transform.setOrigin(btVector3(tran.x, tran.y, tran.z));
 
 		auto v = glm::quat_cast((hydraLeftPosition.getData()));
@@ -231,7 +231,7 @@ void Hydra::update()
 		leftModel->rigidBody->setCenterOfMassTransform(transform);
 
 		btTransform tr = leftModel->rigidBody->getWorldTransform();
-		tr.setRotation(btQuaternion(-cameraYAngle, -cameraXAngle, 0) * tr.getRotation());
+		tr.setRotation(btQuaternion(-cameraYAngle, -cameraXAngle, 0.0f) * tr.getRotation());
 		leftModel->rigidBody->setWorldTransform(tr);
 	}
 	if (hydraLeftBumper.isInitialized())
@@ -241,17 +241,17 @@ void Hydra::update()
 	}
 	if (hydraLeftTrigger.isInitialized())
 	{
-		if (hydraLeftTrigger.getData() - 0.1 > 0)
+		if (hydraLeftTrigger.getData() - 0.1f > 0.0f)
 			MoveDownward();
 	}
 }
 
 void Hydra::initHydraModels()
 {
-	btVector3 size = btVector3(0.1, 0.1, 0.85);
+	btVector3 size = btVector3(0.1f, 0.1f, 0.85f);
 	btScalar mass = 0;
-	rightModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword01\\rusword.obj", size, mass);
-	leftModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword02\\rusword.obj", size, mass);
+	rightModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword01\\rusword.obj", size, mass, btVector3(0, -100, 0));
+	leftModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\Sword02\\rusword.obj", size, mass, btVector3(0, -100, 0));
 }
 
 glm::mat4 Hydra::getWorldMatrixFromHydra(glm::mat4 old)

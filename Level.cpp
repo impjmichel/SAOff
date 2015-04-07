@@ -20,9 +20,14 @@
 #include "CameraCharacter.h"
 #include "Main.h"
 #include <time.h>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <sys/timeb.h>
+#include "stb_image.h"
 
-HydraCollisionInformation leftHydraCollisionInformaton;
-HydraCollisionInformation rightHydraCollisionInformaton;
+CollisionInformation leftHydraCollisionInformation;
+CollisionInformation rightHydraCollisionInformation;
 
 bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 {
@@ -33,19 +38,51 @@ bool contactProcessedCallback(btManifoldPoint& cp, void* body0, void* body1)
 		return false;
 
 	//check if mob
+	Mob* foundMob = 0;
+	bool found = false;
+	for each (Mob *m in GameManager::getInstance()->level->mobs)
+	{
+		if (rBody0->getUserPointer() == m->pObjModel || rBody1->getUserPointer() == m->pObjModel)
+		{
+			found = true;
+			foundMob = m;
+			break;
+		}
+	}
+	if (!found) return false;
+
+	GLint64 timer;
+	glGetInteger64v(GL_TIMESTAMP, &timer);
+	timer /= 10000000.0f;
+
 	if (rBody0->getUserPointer() == GameManager::getInstance()->level->hydra->leftModel || rBody1->getUserPointer() == GameManager::getInstance()->level->hydra->leftModel)
 	{
-		switch (leftHydraCollisionInformaton.m_state)
+		switch (leftHydraCollisionInformation.m_state)
 		{
-		case HydraCollisionState::NO_COLLISION:
-			leftHydraCollisionInformaton = HydraCollisionInformation(HydraCollisionState::JUST_GOT_COLLISION, (long)time(NULL));
-			GameManager::getInstance()->level->health -= 5;
-			//Check health < 0;
+		case CollisionState::NO_COLLISION:
+			leftHydraCollisionInformation = CollisionInformation(CollisionState::COLLISION, timer, foundMob);
 			break;
+		}
+	}
 
-		case HydraCollisionState::JUST_GOT_COLLISION:
-			leftHydraCollisionInformaton = HydraCollisionInformation(HydraCollisionState::NO_COLLISION, (long)time(NULL));
+	if (rBody0->getUserPointer() == GameManager::getInstance()->level->hydra->rightModel || rBody1->getUserPointer() == GameManager::getInstance()->level->hydra->rightModel)
+	{
+		switch (rightHydraCollisionInformation.m_state)
+		{
+		case CollisionState::NO_COLLISION:
+			rightHydraCollisionInformation = CollisionInformation(CollisionState::COLLISION, timer, foundMob);
 			break;
+		}
+	}
+
+	if (rBody0->getUserPointer() == GameManager::getInstance()->level->cameraCharacter || rBody1->getUserPointer() == GameManager::getInstance()->level->cameraCharacter)
+	{
+		if (foundMob->lastHitPlayer + 50 <= timer)
+		{
+			GameManager::getInstance()->level->health -= 10;
+			if (GameManager::getInstance()->level->health <= 0)
+				GameManager::getInstance()->level->gameOver = true;
+			foundMob->lastHitPlayer = timer;
 		}
 	}
 
@@ -108,7 +145,7 @@ Level::Level()
 	solver = new btSequentialImpulseConstraintSolver();
 	world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
 
-	world->setGravity(btVector3(0, -9.81f * 20., 0));
+	world->setGravity(btVector3(0.0f, -9.81f * 20.0f, 0.0f));
 
 #ifdef BULLET_DEBUG_DRAW
 	debug* debug_1 = new debug();
@@ -159,11 +196,13 @@ Level::Level()
 		world->addRigidBody(terrainBody); //add the body to the dynamics world
 	}
 
+	srand(time(NULL));
+
 	{
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			Mob *mob = new Mob();
-			mob->init();
+			mob->init(btVector3(rand() % 100 - 50, 2, rand() % 100 - 50));
 			world->addRigidBody(mob->pObjModel->rigidBody);
 			mobs.push_back(mob);
 		}
@@ -197,6 +236,47 @@ Level::~Level()
 
 void Level::update()
 {
+	if (gameOver)
+		return;
+
+	GLint64 timer;
+	glGetInteger64v(GL_TIMESTAMP, &timer);
+	timer /= 10000000.0f;
+
+	if (leftHydraCollisionInformation.m_state == CollisionState::COLLISION && leftHydraCollisionInformation.m_collisionTime + 100 <= timer)
+	{
+		leftHydraCollisionInformation.m_state = CollisionState::NO_COLLISION;
+	}
+	else if (leftHydraCollisionInformation.m_state == CollisionState::COLLISION)
+	{
+		if ((!leftHydraCollisionInformation.m_damageCalculated) && leftHydraCollisionInformation.m_hitMob != 0)
+		{
+			leftHydraCollisionInformation.m_hitMob->health -= 20;
+			if (leftHydraCollisionInformation.m_hitMob->health <= 0) {
+				mobs.erase(std::remove(mobs.begin(), mobs.end(), leftHydraCollisionInformation.m_hitMob), mobs.end());
+				leftHydraCollisionInformation.m_hitMob = 0;
+			}
+			leftHydraCollisionInformation.m_damageCalculated = true;
+		}
+	}
+
+	if (rightHydraCollisionInformation.m_state == CollisionState::COLLISION && rightHydraCollisionInformation.m_collisionTime + 100 <= timer)
+	{
+		rightHydraCollisionInformation.m_state = CollisionState::NO_COLLISION;
+	}
+	else if (rightHydraCollisionInformation.m_state == CollisionState::COLLISION)
+	{
+		if ((!rightHydraCollisionInformation.m_damageCalculated) && rightHydraCollisionInformation.m_hitMob != 0)
+		{
+			rightHydraCollisionInformation.m_hitMob->health -= 20;
+			if (rightHydraCollisionInformation.m_hitMob->health <= 0) {
+				mobs.erase(std::remove(mobs.begin(), mobs.end(), rightHydraCollisionInformation.m_hitMob), mobs.end());
+				rightHydraCollisionInformation.m_hitMob = 0;
+			}
+			rightHydraCollisionInformation.m_damageCalculated = true;
+		}
+	}
+
 	//Keyboard
 	if (WKey->isInitialized() && (WKey->getData() == DigitalState::ON || WKey->getData() == DigitalState::TOGGLE_ON))
 	{
@@ -251,47 +331,47 @@ void Level::update()
 
 	srand(time(NULL));
 
-	if ((cubeList.size() < 0))
-	{
-		btCollisionShape* colShape = new btBoxShape(btVector3(5, 5, 5));
-		btVector3 inertia;
-		colShape->calculateLocalInertia(btScalar(CUBE_MASS), inertia);
-		btTransform startTransform;
+	//if ((cubeList.size() < 0))
+	//{
+	//	btCollisionShape* colShape = new btBoxShape(btVector3(5, 5, 5));
+	//	btVector3 inertia;
+	//	colShape->calculateLocalInertia(btScalar(CUBE_MASS), inertia);
+	//	btTransform startTransform;
 
-		while (cubeList.size() < 100)
-		{
-			startTransform.setIdentity();
-			startTransform.setOrigin(btVector3(0, cubeList.size() < 50 ? 50 : 100, 20));
-			Cube *cube = new Cube(0, cubeList.size() < 50 ? 50 : 100, 20, (rand() % 4) - 2, (rand() % 4) - 2, (rand() % 4) - 2, 5, 5, 5, true, true);
-			while (cube->xVelocity == 0 && cube->yVelocity == 0 && cube->zVelocity == 0)
-			{
-				cube->xVelocity = (rand() % 4);
-				cube->yVelocity = (rand() % 4);
-				cube->zVelocity = (rand() % 4);
-			}
+	//	while (cubeList.size() < 100)
+	//	{
+	//		startTransform.setIdentity();
+	//		startTransform.setOrigin(btVector3(0, cubeList.size() < 50 ? 50 : 100, 20));
+	//		Cube *cube = new Cube(0, cubeList.size() < 50 ? 50 : 100, 20, (rand() % 4) - 2, (rand() % 4) - 2, (rand() % 4) - 2, 5, 5, 5, true, true);
+	//		while (cube->xVelocity == 0 && cube->yVelocity == 0 && cube->zVelocity == 0)
+	//		{
+	//			cube->xVelocity = (rand() % 4);
+	//			cube->yVelocity = (rand() % 4);
+	//			cube->zVelocity = (rand() % 4);
+	//		}
 
-			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-			btRigidBody::btRigidBodyConstructionInfo cInfo(CUBE_MASS, myMotionState, colShape, inertia);
+	//		btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	//		btRigidBody::btRigidBodyConstructionInfo cInfo(CUBE_MASS, myMotionState, colShape, inertia);
 
-			btRigidBody* body = new btRigidBody(cInfo);
-			body->setFriction(0.1);
-			body->setLinearFactor(btVector3(1, 1, 1));
-			body->setLinearVelocity(btVector3(cube->xVelocity, cube->yVelocity, cube->zVelocity));
-			world->addRigidBody(body);
-			cube->setBody(body);
-			cubeList.push_back(cube);
-		}
-	}
+	//		btRigidBody* body = new btRigidBody(cInfo);
+	//		body->setFriction(0.1);
+	//		body->setLinearFactor(btVector3(1, 1, 1));
+	//		body->setLinearVelocity(btVector3(cube->xVelocity, cube->yVelocity, cube->zVelocity));
+	//		world->addRigidBody(body);
+	//		cube->setBody(body);
+	//		cubeList.push_back(cube);
+	//	}
+	//}
 
-	std::vector<Cube *>::iterator iter;
-	for (iter = cubeList.begin(); iter != cubeList.end();) {
-		(*iter)->update();
+	//std::vector<Cube *>::iterator iter;
+	//for (iter = cubeList.begin(); iter != cubeList.end();) {
+	//	(*iter)->update();
 
-		//if ((*iter).isOutOfBounds(-50, 50, -50, 50, -50, 50))
-		//	iter = cubeList.erase(iter);
-		//else
-		++iter;
-	}
+	//	//if ((*iter).isOutOfBounds(-50, 50, -50, 50, -50, 50))
+	//	//	iter = cubeList.erase(iter);
+	//	//else
+	//	++iter;
+	//}
 
 	std::vector<Mob *>::iterator iter2;
 	for (iter2 = mobs.begin(); iter2 != mobs.end();) {
@@ -376,22 +456,22 @@ void Level::draw(DrawMode drawMode)
 		glBegin(GL_QUADS);
 
 		//Under
-		glVertex2f(-1., -1.);
-		glVertex2f(1., -1.);
-		glVertex2f(1., -0.8);
-		glVertex2f(-1., -0.8);
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(1.0f, -1.0f);
+		glVertex2f(1.0f, -0.8f);
+		glVertex2f(-1.0f, -0.8f);
 
 		//Upper
-		glVertex2f(-1., 1.);
-		glVertex2f(1., 1.);
-		glVertex2f(1., 0.8);
-		glVertex2f(-1., 0.8);
+		glVertex2f(-1.0f, 1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(1.0f, 0.8f);
+		glVertex2f(-1.0f, 0.8f);
 
 		//Left
-		glVertex2f(-0.8, -0.8);
-		glVertex2f(-1., -0.8);
-		glVertex2f(-1., 0.8);
-		glVertex2f(-0.8, 0.8);
+		glVertex2f(-0.8f, -0.8f);
+		glVertex2f(-1.0f, -0.8f);
+		glVertex2f(-1.0f, 0.8f);
+		glVertex2f(-0.8f, 0.8f);
 		glEnd();
 	}
 	else if (drawMode == DrawMode::RightEye)
@@ -400,22 +480,22 @@ void Level::draw(DrawMode drawMode)
 		glBegin(GL_QUADS);
 
 		//Under
-		glVertex2f(-1., -1.);
-		glVertex2f(1., -1.);
-		glVertex2f(1., -0.8);
-		glVertex2f(-1., -0.8);
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(1.0f, -1.0f);
+		glVertex2f(1.0f, -0.8f);
+		glVertex2f(-1.0f, -0.8f);
 
 		//Upper
-		glVertex2f(-1., 1.);
-		glVertex2f(1., 1.);
-		glVertex2f(1., 0.8);
-		glVertex2f(-1., 0.8);
+		glVertex2f(-1.0f, 1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(1.0f, 0.8f);
+		glVertex2f(-1.0f, 0.8f);
 
 		//Right
-		glVertex2f(0.8, -0.8);
-		glVertex2f(1., -0.8);
-		glVertex2f(1., 0.8);
-		glVertex2f(0.8, 0.8);
+		glVertex2f(0.8f, -0.8f);
+		glVertex2f(1.0f, -0.8f);
+		glVertex2f(1.0f, 0.8f);
+		glVertex2f(0.8f, 0.8f);
 		glEnd();
 	}
 	else if (drawMode == DrawMode::Simulation)
@@ -425,28 +505,28 @@ void Level::draw(DrawMode drawMode)
 		glBegin(GL_QUADS);
 
 		//Under
-		glVertex2f(-1., -1.);
-		glVertex2f(1., -1.);
-		glVertex2f(1., -0.8);
-		glVertex2f(-1., -0.8);
+		glVertex2f(-1.0f, -1.0f);
+		glVertex2f(1.0f, -1.0f);
+		glVertex2f(1.0f, -0.8f);
+		glVertex2f(-1.0f, -0.8f);
 
 		//Upper
-		glVertex2f(-1., 1.);
-		glVertex2f(1., 1.);
-		glVertex2f(1., 0.8);
-		glVertex2f(-1., 0.8);
+		glVertex2f(-1.0f, 1.0f);
+		glVertex2f(1.0f, 1.0f);
+		glVertex2f(1.0f, 0.8f);
+		glVertex2f(-1.0f, 0.8f);
 
 		//Right
-		glVertex2f(0.8, -0.8);
-		glVertex2f(1., -0.8);
-		glVertex2f(1., 0.8);
-		glVertex2f(0.8, 0.8);
+		glVertex2f(0.8f, -0.8f);
+		glVertex2f(1.0f, -0.8f);
+		glVertex2f(1.0f, 0.8f);
+		glVertex2f(0.8f, 0.8f);
 
 		//Left
-		glVertex2f(-0.8, -0.8);
-		glVertex2f(-1., -0.8);
-		glVertex2f(-1., 0.8);
-		glVertex2f(-0.8, 0.8);
+		glVertex2f(-0.8f, -0.8f);
+		glVertex2f(-1.0f, -0.8f);
+		glVertex2f(-1.0f, 0.8f);
+		glVertex2f(-0.8f, 0.8f);
 		glEnd();
 #ifndef SIMULATION_MODE
 	}

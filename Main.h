@@ -4,6 +4,8 @@
 //#define SIMULATION_MODE
 
 #ifdef _DEBUG
+#define BULLET_DEBUG_DRAW
+
 #pragma comment(lib, "Libs/Bullet3Common_vs2010_debug.lib")
 #pragma comment(lib, "Libs/Bullet3Collision_vs2010_debug.lib")
 #pragma comment(lib, "Libs/Bullet3Dynamics_vs2010_debug.lib")

@@ -10,6 +10,7 @@
 #include <btBulletDynamicsCommon.h>
 #include <map>
 #include <string>
+#include "Hydra.h"
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -161,7 +162,7 @@ glm::vec4 calcTangentVector(
 }
 
 
-void ObjModel::createRigidBody(const btVector3 &size, btScalar mass)
+void ObjModel::createRigidBody(const btVector3 &size, btScalar mass, const btVector3 &origin)
 {
 	groundShape = new btBoxShape(size);
 	btVector3 localInertia(0, 0, 0);
@@ -170,7 +171,7 @@ void ObjModel::createRigidBody(const btVector3 &size, btScalar mass)
 
 	btTransform groundTransform;
 	groundTransform.setIdentity();
-	groundTransform.setOrigin(btVector3(0, 2, 0));
+	groundTransform.setOrigin(origin);
 	//btQuaternion quat(34.5, 0.0, 0.0);
 	btQuaternion quat(0, 0, 0);
 	quat.setRotation(btVector3(0.0, 1.0, 0.0), TO_RADIANS(180));
@@ -183,11 +184,9 @@ void ObjModel::createRigidBody(const btVector3 &size, btScalar mass)
 	rigidBody->setUserPointer(this);
 
 	rigidBody->setAngularFactor(btVector3(0.0, 1.0, 0.0));
-
-	rigidBody->setRestitution(1.75);
 }
 
-ObjModel::ObjModel(std::string fileName, const btVector3 &size, btScalar mass)
+ObjModel::ObjModel(std::string fileName, const btVector3 &size, btScalar mass, const btVector3 &origin)
 {
 	//If allready in buffer, load that instead.
 	objModelCore = buffer[fileName];
@@ -198,7 +197,7 @@ ObjModel::ObjModel(std::string fileName, const btVector3 &size, btScalar mass)
 	}
 	else
 	{
-		createRigidBody(size, mass);
+		createRigidBody(size, mass, origin);
 		return;
 	}
 
@@ -394,7 +393,7 @@ ObjModel::ObjModel(std::string fileName, const btVector3 &size, btScalar mass)
         
     glBindVertexArray(0);
 
-	createRigidBody(size, mass);
+	createRigidBody(size, mass, origin);
 }
 
 ObjModel::~ObjModel(void)

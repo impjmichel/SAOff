@@ -11,18 +11,26 @@
 #include "Camera.h"
 #include <cmath>
 #include <glm/gtc/type_ptr.hpp>
+#include "GameManager.h"
+#include "Hydra.h"
 
-void Mob::init()
+void Mob::init(const btVector3 &origin)
 {
 	shaderID = initShader("simple");
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\portalbutton\\portalbutton.obj");
 	btVector3 size(0.2, 0.45, 1.0);
 	btScalar mass = 10.0;
-	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf3\\Wolf.obj", size, mass);
+	pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf3\\Wolf.obj", size, mass, origin);
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\wolf2\\Wolf.obj");
 	//pObjModel = new ObjModel("c:\\VrCave\\Development\\SwordArtOffline\\Data\\boss\\Mon.obj");
 
 	pObjModel->rigidBody->setAngularFactor(btVector3(0.0, 0.0, 0.0));
+}
+
+Mob::~Mob()
+{
+	GameManager::getInstance()->level->world->removeRigidBody(pObjModel->rigidBody);
+	delete pObjModel;
 }
 
 void Mob::draw()
@@ -75,10 +83,13 @@ void Mob::draw()
 
 void Mob::update()
 {
-	if (health != 0)
-		health--;
-	else
-		health = maxHealth;
+	if (!GameManager::getInstance()->level->hydra->initRigidbodies)
+		return;
+
+	//if (health != 0)
+	//	health--;
+	//else
+	//	health = maxHealth;
 
 	//Activate
 	pObjModel->rigidBody->setActivationState(1);
@@ -106,6 +117,10 @@ void Mob::update()
 	//Set X and Z velocity, keep Y the same.
 	btVector3 vec = pObjModel->rigidBody->getLinearVelocity();
 	float yValue = vec.y();
+	
+	if (yValue < 0.1)
+		pObjModel->rigidBody->setRestitution(1.75);
+	
 	vec.setX(((vec.x() * 2.) + (xVel * 1.)) / 3.);//TODO: Did vec.x() and average for fun, seems pretty good; check.
 	vec.setY(yValue);
 	vec.setZ(((vec.z() * 2.) + (zVel * 1.)) / 3.);//TODO: Did vec.z() and average for fun, seems pretty good; check.

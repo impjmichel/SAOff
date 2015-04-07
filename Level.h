@@ -1,10 +1,6 @@
 #ifndef LEVEL_H
 #define LEVEL_H
 
-#ifdef _DEBUG
-#define BULLET_DEBUG_DRAW
-#endif
-
 #include <vector>
 #include <VrLib\Device.h>
 
@@ -24,24 +20,24 @@ class btRigidBody;
 class Hydra;
 class CameraCharacter;
 
-enum HydraCollisionState
+enum CollisionState
 {
 	NO_COLLISION,
-	COLLISION,
-	JUST_GOT_COLLISION,
-	JUST_LOST_COLLISION
+	COLLISION
 };
 
-struct HydraCollisionInformation
+struct CollisionInformation
 {
-	HydraCollisionInformation(HydraCollisionState state, long collisionTime) : m_state(state), m_collisionTime(collisionTime){}
-	HydraCollisionInformation(){}
-	HydraCollisionState m_state = HydraCollisionState::NO_COLLISION;
+	CollisionInformation(CollisionState state, long collisionTime, Mob* hitMob) : m_state(state), m_collisionTime(collisionTime), m_hitMob(hitMob) {}
+	CollisionInformation(){}
+	CollisionState m_state = CollisionState::NO_COLLISION;
 	long m_collisionTime = LONG_MAX;
+	bool m_damageCalculated = false;
+	Mob *m_hitMob;
 };
 
-extern HydraCollisionInformation leftHydraCollisionInformaton;
-extern HydraCollisionInformation rightHydraCollisionInformaton;
+extern CollisionInformation leftHydraCollisionInformation;
+extern CollisionInformation rightHydraCollisionInformation;
 
 enum DrawMode
 {
@@ -84,12 +80,14 @@ public:
 	Hydra *hydra;
 	CameraCharacter *cameraCharacter;
 	btDiscreteDynamicsWorld* world;
+	bool gameOver = false;
 
 	Level();
 	~Level();
 	void draw(DrawMode drawMode);
 	void update();
 	void update(double frameTime, double totalTime);
+	unsigned int textureID = 0;
 
 	float health = 100;
 	float maxHealth = 100;

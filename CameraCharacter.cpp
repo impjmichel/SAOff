@@ -31,7 +31,7 @@ void CameraCharacter::draw()
 
 void CameraCharacter::init()
 {
-	groundShape = new btBoxShape(btVector3(0.4, 0.4, 0.4));
+	groundShape = new btBoxShape(btVector3(0.4, 1.0, 0.4));
 
 	btScalar mass =	0.0; //rigidbody is static if mass is zero, otherwise dynamic
 	btVector3 localInertia(0, 0, 0);
@@ -50,7 +50,7 @@ void CameraCharacter::init()
 	myMotionState = new btDefaultMotionState(groundTransform); //motionstate provides interpolation capabilities, and only synchronizes 'active' objects
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
 	rigidBody = new btRigidBody(rbInfo);
-	rigidBody->setUserPointer(rigidBody);
+	rigidBody->setUserPointer(this);
 
 	rigidBody->setRestitution(1.75);
 

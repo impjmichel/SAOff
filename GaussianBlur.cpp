@@ -7,7 +7,7 @@
 
 #include <Windows.h>
 
-GaussianBlur::GaussianBlur() {}
+GaussianBlur::GaussianBlur(bool bloom) : bloom(bloom) {}
 
 void GaussianBlur::init()
 {
@@ -78,7 +78,7 @@ void GaussianBlur::draw()
 	glUseProgram(pixelShader);
 	//GLint loc1 = glGetUniformLocation(pixelShader, "time");
 	//glUniform1f(loc1, fpTime);
-
+	glUniform1i(glGetUniformLocation(pixelShader, "bloom"), bloom);
 	GLint loc = glGetUniformLocation(pixelShader, "texture");
 	GLint loc2 = glGetUniformLocation(pixelShader, "firstPass");
 
